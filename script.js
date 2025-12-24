@@ -1,3 +1,4 @@
+
 // Enhanced Holiday Greetings Experience
 class HolidayMagic {
     constructor() {
@@ -8,10 +9,12 @@ class HolidayMagic {
             isSnowActive: true,
             autoSlideInterval: null,
             countdownInterval: null,
+            slideCountdown: 7,
             particles: [],
-            fireworks: [],
             snowflakes: [],
-            snowCtx: null
+            snowCtx: null,
+            lastFrameTime: 0,
+            frameRate: 60
         };
         
         this.initialize();
@@ -20,7 +23,6 @@ class HolidayMagic {
     initialize() {
         this.cacheElements();
         
-        // Check if elements exist before proceeding
         if (!this.elements.userNameInput) {
             console.error('Required elements not found');
             return;
@@ -34,6 +36,9 @@ class HolidayMagic {
         this.startMessageAutoSlide();
         this.animateTitle();
         this.animateTypingText();
+        
+        // Start animation loop
+        requestAnimationFrame((timestamp) => this.animationLoop(timestamp));
     }
     
     cacheElements() {
@@ -72,41 +77,26 @@ class HolidayMagic {
             this.elements.userNameInput.addEventListener('input', (e) => {
                 this.animateInput(e.target.value);
             });
-            
-            this.elements.userNameInput.addEventListener('focus', () => {
-                this.elements.userNameInput.parentElement.classList.add('focused');
-            });
-            
-            this.elements.userNameInput.addEventListener('blur', () => {
-                this.elements.userNameInput.parentElement.classList.remove('focused');
-            });
         }
     }
     
     initSnowCanvas() {
         const canvas = this.elements.snowCanvas;
-        if (!canvas) {
-            console.warn('Snow canvas not found, skipping snow effect');
-            return;
-        }
+        if (!canvas) return;
         
         const ctx = canvas.getContext('2d');
         this.state.snowCtx = ctx;
         
-        // Set canvas size
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
-        // Create snowflakes
         this.createSnowflakes();
         
-        // Start animation
-        this.animateSnow();
-        
-        // Handle window resize
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            this.state.snowflakes = [];
+            this.createSnowflakes();
         });
     }
     
@@ -114,62 +104,120 @@ class HolidayMagic {
         const canvas = this.elements.snowCanvas;
         if (!canvas) return;
         
-        // Create 150 snowflakes
-        for (let i = 0; i < 150; i++) {
+        const flakeCount = Math.min(100, Math.floor(canvas.width * canvas.height / 10000));
+        
+        for (let i = 0; i < flakeCount; i++) {
             this.state.snowflakes.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                radius: Math.random() * 4 + 1,
-                speed: Math.random() * 1 + 0.5,
-                wind: Math.random() * 0.5 - 0.25,
-                opacity: Math.random() * 0.5 + 0.3
+                radius: Math.random() * 3 + 1,
+                speed: Math.random() * 0.8 + 0.3,
+                wind: Math.random() * 0.3 - 0.15,
+                opacity: Math.random() * 0.4 + 0.3,
+                wobble: Math.random() * 0.5,
+                wobbleSpeed: Math.random() * 0.05 + 0.02
             });
         }
     }
     
+    animationLoop(timestamp) {
+        const deltaTime = timestamp - this.state.lastFrameTime;
+        const interval = 1000 / this.state.frameRate;
+        
+        if (deltaTime > interval) {
+            this.state.lastFrameTime = timestamp - (deltaTime % interval);
+            
+            // Update snow animation
+            this.animateSnow();
+            
+            // Update particles
+            this.updateParticles();
+        }
+        
+        requestAnimationFrame((ts) => this.animationLoop(ts));
+    }
+    
     animateSnow() {
-        if (!this.elements.snowCanvas || !this.state.snowCtx) return;
+        if (!this.elements.snowCanvas || !this.state.snowCtx || !this.state.isSnowActive) return;
         
         const ctx = this.state.snowCtx;
         const canvas = this.elements.snowCanvas;
         
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Clear with slight transparency for trail effect
+        ctx.fillStyle = 'rgba(10, 10, 30, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        if (this.state.isSnowActive) {
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        
+        this.state.snowflakes.forEach(flake => {
+            // Add gentle wobble
+            const wobbleX = Math.sin(Date.now() * flake.wobbleSpeed) * flake.wobble;
             
-            this.state.snowflakes.forEach(flake => {
-                ctx.beginPath();
-                ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-                ctx.globalAlpha = flake.opacity;
-                ctx.fill();
-                
-                // Update position
-                flake.y += flake.speed;
-                flake.x += flake.wind;
-                
-                // Reset if out of bounds
-                if (flake.y > canvas.height) {
-                    flake.y = -10;
-                    flake.x = Math.random() * canvas.width;
-                }
-                if (flake.x > canvas.width) flake.x = 0;
-                if (flake.x < 0) flake.x = canvas.width;
-            });
-        }
-        
-        requestAnimationFrame(() => this.animateSnow());
+            ctx.beginPath();
+            ctx.arc(flake.x + wobbleX, flake.y, flake.radius, 0, Math.PI * 2);
+            ctx.globalAlpha = flake.opacity;
+            ctx.fill();
+            
+            // Update position
+            flake.y += flake.speed;
+            flake.x += flake.wind;
+            
+            // Reset if out of bounds
+            if (flake.y > canvas.height + 10) {
+                flake.y = -10;
+                flake.x = Math.random() * canvas.width;
+            }
+            if (flake.x > canvas.width + 10) flake.x = -10;
+            if (flake.x < -10) flake.x = canvas.width + 10;
+        });
     }
     
-    animateInput(value) {
-        const inputGroup = this.elements.userNameInput?.parentElement;
-        if (inputGroup) {
-            if (value.length > 0) {
-                inputGroup.style.transform = 'scale(1.02)';
-            } else {
-                inputGroup.style.transform = 'scale(1)';
-            }
+    createParticles() {
+        const container = this.elements.particlesContainer;
+        if (!container) return;
+        
+        // Clear existing particles
+        container.innerHTML = '';
+        this.state.particles = [];
+        
+        const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96e6a1'];
+        const particleCount = Math.min(80, Math.floor(window.innerWidth * window.innerHeight / 20000));
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            const size = Math.random() * 4 + 1;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const duration = Math.random() * 15 + 10;
+            const delay = Math.random() * 5;
+            
+            particle.style.cssText = `
+                position: fixed;
+                width: ${size}px;
+                height: ${size}px;
+                background: ${color};
+                border-radius: 50%;
+                top: ${Math.random() * 100}vh;
+                left: ${Math.random() * 100}vw;
+                opacity: ${Math.random() * 0.3 + 0.2};
+                pointer-events: none;
+                z-index: 0;
+                animation: floatParticle ${duration}s linear infinite ${delay}s;
+            `;
+            
+            container.appendChild(particle);
+            this.state.particles.push({
+                element: particle,
+                speed: Math.random() * 0.5 + 0.2,
+                angle: Math.random() * Math.PI * 2
+            });
         }
+    }
+    
+    updateParticles() {
+        this.state.particles.forEach(particle => {
+            // Simple CSS animation handles most of it
+            // We can add additional logic here if needed
+        });
     }
     
     startGreeting() {
@@ -183,13 +231,19 @@ class HolidayMagic {
         this.state.userName = name;
         this.playSound('magicSound');
         
-        // Animate transition
+        // Smooth transition
         this.animateTransition(() => {
             if (this.elements.inputSection) {
-                this.elements.inputSection.style.display = 'none';
+                this.elements.inputSection.style.opacity = '0';
+                setTimeout(() => {
+                    this.elements.inputSection.style.display = 'none';
+                }, 500);
             }
             if (this.elements.greetingSection) {
                 this.elements.greetingSection.style.display = 'block';
+                setTimeout(() => {
+                    this.elements.greetingSection.style.opacity = '1';
+                }, 10);
             }
             this.updateGreeting();
             this.triggerCelebration();
@@ -199,12 +253,14 @@ class HolidayMagic {
     animateTransition(callback) {
         const magicCircle = document.querySelector('.magic-circle');
         if (magicCircle) {
-            magicCircle.style.animation = 'pulseCircle 1s ease-in-out';
+            magicCircle.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            magicCircle.style.opacity = '0.8';
             
             setTimeout(() => {
-                magicCircle.style.animation = '';
+                magicCircle.style.transform = 'translate(-50%, -50%) scale(1)';
+                magicCircle.style.opacity = '0.3';
                 callback();
-            }, 1000);
+            }, 600);
         } else {
             callback();
         }
@@ -212,26 +268,19 @@ class HolidayMagic {
     
     updateGreeting() {
         const nameElement = this.elements.nameDisplay?.querySelector('.name-text');
-        const greetingTitles = [
-            "Special Greetings",
-            "Holiday Wishes",
-            "Season's Greetings",
-            "Warmest Wishes",
-            "Joyful Moments"
-        ];
         
-        // Animate name change
         if (nameElement && this.state.userName) {
             this.animateTextChange(nameElement, this.state.userName);
         }
         
         // Update greeting title
         if (this.elements.greetingTitle) {
-            const randomTitle = greetingTitles[Math.floor(Math.random() * greetingTitles.length)];
+            const titles = ["Special Greetings", "Holiday Wishes", "Season's Greetings", "Warmest Wishes"];
+            const randomTitle = titles[Math.floor(Math.random() * titles.length)];
             this.elements.greetingTitle.textContent = randomTitle;
         }
         
-        // Update message display
+        // Show current message
         this.showMessage(this.state.currentMessage);
         
         // Update message counter
@@ -241,15 +290,13 @@ class HolidayMagic {
     }
     
     animateTextChange(element, newText) {
-        element.style.animation = 'textFadeOut 0.3s ease-out';
+        element.style.transform = 'scale(1.2)';
+        element.style.opacity = '0.5';
         
         setTimeout(() => {
             element.textContent = newText;
-            element.style.animation = 'textFadeIn 0.3s ease-out';
-            
-            setTimeout(() => {
-                element.style.animation = '';
-            }, 300);
+            element.style.transform = 'scale(1)';
+            element.style.opacity = '1';
         }, 300);
     }
     
@@ -259,21 +306,21 @@ class HolidayMagic {
         
         if (activeMessage) {
             activeMessage.classList.remove('active');
-            activeMessage.style.animation = 'messageSlideOut 0.8s ease-out';
+            activeMessage.style.animation = 'messageSlideOut 0.8s ease-out forwards';
         }
         
         setTimeout(() => {
             if (messages[index]) {
                 messages[index].classList.add('active');
-                messages[index].style.animation = 'messageSlideIn 0.8s ease-out';
+                messages[index].style.animation = 'messageSlideIn 0.8s ease-out forwards';
                 
-                // Add text animation
-                this.animateMessageText(messages[index]);
+                // Add typing effect
+                this.typeMessageText(messages[index]);
             }
         }, 400);
     }
     
-    animateMessageText(element) {
+    typeMessageText(element) {
         const text = element.textContent;
         element.textContent = '';
         
@@ -282,11 +329,11 @@ class HolidayMagic {
             if (i < text.length) {
                 element.textContent += text.charAt(i);
                 i++;
-                setTimeout(typeWriter, 30);
+                setTimeout(typeWriter, 40); // Slower typing speed
             }
         };
         
-        typeWriter();
+        setTimeout(typeWriter, 200);
     }
     
     nextMessage() {
@@ -297,47 +344,75 @@ class HolidayMagic {
     }
     
     startMessageAutoSlide() {
+        // Clear any existing interval
+        if (this.state.autoSlideInterval) {
+            clearInterval(this.state.autoSlideInterval);
+        }
+        
+        // Start auto-slide countdown
+        this.startAutoSlideCountdown();
+        
+        // Start auto-slide interval
         this.state.autoSlideInterval = setInterval(() => {
             this.nextMessage();
-        }, 7000); // 7 seconds
-        
-        // Start countdown display
-        this.startAutoSlideCountdown();
+        }, 10000); // 10 seconds between messages
     }
     
     startAutoSlideCountdown() {
-        let count = 7;
-        const updateCountdown = () => {
-            if (this.elements.countdownDisplay) {
-                this.elements.countdownDisplay.textContent = count;
-                count--;
-                
-                if (count < 0) {
-                    count = 7;
-                }
-            }
-        };
+        this.state.slideCountdown = 10;
         
-        // Update immediately and every second
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
+        const countdownElement = this.elements.countdownDisplay;
+        if (!countdownElement) return;
+        
+        // Clear any existing countdown interval
+        if (this.state.countdownInterval) {
+            clearInterval(this.state.countdownInterval);
+        }
+        
+        this.state.countdownInterval = setInterval(() => {
+            this.state.slideCountdown--;
+            
+            if (countdownElement) {
+                countdownElement.textContent = this.state.slideCountdown;
+            }
+            
+            if (this.state.slideCountdown <= 0) {
+                this.state.slideCountdown = 10;
+            }
+        }, 1000);
     }
     
     resetAutoSlide() {
-        clearInterval(this.state.autoSlideInterval);
-        this.startMessageAutoSlide();
+        this.state.slideCountdown = 10;
+        if (this.elements.countdownDisplay) {
+            this.elements.countdownDisplay.textContent = '10';
+        }
+        
+        // Reset the progress bar animation
+        const progressBar = this.elements.progressBar;
+        if (progressBar) {
+            progressBar.style.animation = 'none';
+            setTimeout(() => {
+                progressBar.style.animation = 'progressShrink 10s linear infinite';
+            }, 10);
+        }
     }
     
     startCountdown() {
-        // Update New Year countdown every second
+        // Update New Year 2026 countdown every second
         this.updateNewYearCountdown();
         setInterval(() => this.updateNewYearCountdown(), 1000);
     }
     
     updateNewYearCountdown() {
         const now = new Date();
-        const newYear = new Date(now.getFullYear() + 1, 0, 1);
+        const newYear = new Date(2026, 0, 1); // January 1, 2026
         const diff = newYear - now;
+        
+        if (diff <= 0) {
+            // If New Year has passed, set to next year
+            newYear.setFullYear(2027);
+        }
         
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -358,16 +433,16 @@ class HolidayMagic {
             setTimeout(() => {
                 element.textContent = value;
                 element.classList.remove('flip');
-            }, 500);
+            }, 300);
         }
     }
     
     startAutoThemeCycle() {
         const themes = [
-            { bg: 'linear-gradient(135deg, #0a0a2a, #1a1a4a, #2d0a3d, #0a2a2a, #2a0a2a)', name: 'Cosmic Night' },
-            { bg: 'linear-gradient(135deg, #1a0a2a, #4a1a4a, #3d0a2d, #2a0a1a, #2a2a0a)', name: 'Royal Velvet' },
-            { bg: 'linear-gradient(135deg, #0a2a2a, #1a4a4a, #0a3d2d, #2a2a0a, #2a0a0a)', name: 'Emerald Forest' },
-            { bg: 'linear-gradient(135deg, #2a0a0a, #4a1a1a, #3d0a0a, #2a2a1a, #0a2a2a)', name: 'Crimson Dawn' }
+            { bg: 'linear-gradient(135deg, #0a0a2a, #1a1a4a, #2d0a3d, #0a2a2a, #2a0a2a)' },
+            { bg: 'linear-gradient(135deg, #1a0a2a, #4a1a4a, #3d0a2d, #2a0a1a, #2a2a0a)' },
+            { bg: 'linear-gradient(135deg, #0a2a2a, #1a4a4a, #0a3d2d, #2a2a0a, #2a0a0a)' },
+            { bg: 'linear-gradient(135deg, #2a0a0a, #4a1a1a, #3d0a0a, #2a2a1a, #0a2a2a)' }
         ];
         
         let currentTheme = 0;
@@ -375,42 +450,7 @@ class HolidayMagic {
         setInterval(() => {
             currentTheme = (currentTheme + 1) % themes.length;
             document.body.style.background = themes[currentTheme].bg;
-            
-            if (this.elements.typingText) {
-                this.elements.typingText.textContent = `Theme: ${themes[currentTheme].name}`;
-            }
-        }, 15000); // 15 seconds
-    }
-    
-    createParticles() {
-        const container = this.elements.particlesContainer;
-        if (!container) return;
-        
-        const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96e6a1'];
-        
-        for (let i = 0; i < 100; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            
-            const size = Math.random() * 5 + 2;
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            
-            particle.style.cssText = `
-                position: absolute;
-                width: ${size}px;
-                height: ${size}px;
-                background: ${color};
-                border-radius: 50%;
-                top: ${Math.random() * 100}vh;
-                left: ${Math.random() * 100}vw;
-                opacity: ${Math.random() * 0.5 + 0.3};
-                animation: floatParticle ${Math.random() * 10 + 10}s linear infinite;
-                animation-delay: ${Math.random() * 5}s;
-            `;
-            
-            container.appendChild(particle);
-            this.state.particles.push(particle);
-        }
+        }, 20000); // 20 seconds between theme changes
     }
     
     triggerFireworks() {
@@ -419,91 +459,77 @@ class HolidayMagic {
         for (let i = 0; i < 3; i++) {
             setTimeout(() => {
                 this.createFirework(
-                    Math.random() * window.innerWidth,
-                    Math.random() * window.innerHeight * 0.5
+                    Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.1,
+                    Math.random() * window.innerHeight * 0.4 + window.innerHeight * 0.2
                 );
-            }, i * 300);
+            }, i * 400);
         }
     }
     
     createFirework(x, y) {
         const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+        const particleCount = 30;
         
-        // Create firework container
-        const container = document.createElement('div');
-        container.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1000;
-        `;
-        
-        // Create particles
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            const angle = (Math.PI * 2 * i) / 50;
-            const velocity = Math.random() * 3 + 1;
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            const size = Math.random() * 4 + 2;
-            
-            particle.style.cssText = `
-                position: absolute;
-                width: ${size}px;
-                height: ${size}px;
-                background: ${color};
-                border-radius: 50%;
-                left: ${x}px;
-                top: ${y}px;
-                opacity: 1;
-                transform: translate(0, 0);
-                transition: all 1s ease-out;
-            `;
-            
-            container.appendChild(particle);
-            
-            // Animate particle
+        for (let i = 0; i < particleCount; i++) {
             setTimeout(() => {
-                const dx = Math.cos(angle) * velocity * 50;
-                const dy = Math.sin(angle) * velocity * 50;
+                const particle = document.createElement('div');
+                const angle = (Math.PI * 2 * i) / particleCount;
+                const velocity = Math.random() * 2 + 1;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.random() * 4 + 2;
+                const life = 1000;
                 
-                particle.style.transform = `translate(${dx}px, ${dy}px)`;
-                particle.style.opacity = '0';
+                particle.style.cssText = `
+                    position: fixed;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${color};
+                    border-radius: 50%;
+                    left: ${x}px;
+                    top: ${y}px;
+                    opacity: 1;
+                    pointer-events: none;
+                    z-index: 1000;
+                    transform: translate(0, 0);
+                    transition: all 0.8s ease-out;
+                `;
                 
-                // Remove after animation
+                document.body.appendChild(particle);
+                
+                // Animate particle
                 setTimeout(() => {
-                    if (particle.parentNode) {
-                        particle.parentNode.removeChild(particle);
-                    }
-                }, 1000);
-            }, 10);
+                    const dx = Math.cos(angle) * velocity * 60;
+                    const dy = Math.sin(angle) * velocity * 60;
+                    
+                    particle.style.transform = `translate(${dx}px, ${dy}px)`;
+                    particle.style.opacity = '0';
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, 800);
+                }, 10);
+            }, Math.random() * 200);
         }
-        
-        document.body.appendChild(container);
-        
-        // Remove container after animation
-        setTimeout(() => {
-            if (container.parentNode) {
-                container.parentNode.removeChild(container);
-            }
-        }, 1100);
     }
     
     toggleSnow() {
         this.state.isSnowActive = !this.state.isSnowActive;
         const btn = document.querySelector('[onclick="toggleSnow()"]');
         if (btn) {
-            btn.innerHTML = this.state.isSnowActive ? 
-                '<i class="fas fa-snowflake"></i><span>Snow Off</span>' :
-                '<i class="fas fa-snowflake"></i><span>Snow On</span>';
+            const span = btn.querySelector('span');
+            if (span) {
+                span.textContent = this.state.isSnowActive ? 'Snow Off' : 'Snow On';
+            }
         }
     }
     
     shareGreeting() {
         const message = this.getCurrentMessage();
-        const text = `🎄 ${this.state.userName || 'Someone'} sent you magical holiday greetings! ✨\n\n"${message}"\n\nSend your own magical greetings!`;
+        const userName = this.state.userName || 'Someone';
+        const text = `🎄 ${userName} sent you magical holiday greetings! ✨\n\n"${message}"\n\nSend your own magical greetings!`;
         
         if (navigator.share) {
             navigator.share({
@@ -521,8 +547,7 @@ class HolidayMagic {
     getCurrentMessage() {
         const messages = document.querySelectorAll('.message');
         const activeMessage = document.querySelector('.message.active');
-        return activeMessage ? activeMessage.textContent : 
-               (messages[this.state.currentMessage] ? messages[this.state.currentMessage].textContent : 'Happy Holidays!');
+        return activeMessage ? activeMessage.textContent : 'Happy Holidays!';
     }
     
     resetExperience() {
@@ -534,14 +559,18 @@ class HolidayMagic {
         }
         if (this.elements.inputSection) {
             this.elements.inputSection.style.display = 'block';
+            this.elements.inputSection.style.opacity = '1';
         }
         if (this.elements.greetingSection) {
             this.elements.greetingSection.style.display = 'none';
+            this.elements.greetingSection.style.opacity = '0';
         }
         
         if (this.elements.userNameInput) {
             this.elements.userNameInput.focus();
         }
+        
+        this.resetAutoSlide();
         this.playSound('clickSound');
     }
     
@@ -556,54 +585,17 @@ class HolidayMagic {
     
     triggerCelebration() {
         this.triggerFireworks();
-        this.createBurstEffect();
-        this.playSound('magicSound');
         
         // Animate orbit items
         const orbitItems = document.querySelectorAll('.orbit-item');
-        orbitItems.forEach(item => {
-            item.style.animation = 'orbitItemFloat 1s ease-out';
+        orbitItems.forEach((item, index) => {
             setTimeout(() => {
-                item.style.animation = 'orbitItemFloat 3s ease-in-out infinite';
-            }, 1000);
+                item.style.transform += ' scale(1.5)';
+                setTimeout(() => {
+                    item.style.transform = item.style.transform.replace(' scale(1.5)', '');
+                }, 300);
+            }, index * 100);
         });
-    }
-    
-    createBurstEffect() {
-        const burst = document.createElement('div');
-        burst.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,215,0,0.8), transparent 70%);
-            z-index: 1000;
-            pointer-events: none;
-        `;
-        
-        document.body.appendChild(burst);
-        
-        // Animate burst
-        let size = 0;
-        const grow = () => {
-            size += 20;
-            burst.style.width = `${size}px`;
-            burst.style.height = `${size}px`;
-            burst.style.opacity = 1 - (size / 400);
-            
-            if (size < 400) {
-                requestAnimationFrame(grow);
-            } else {
-                if (burst.parentNode) {
-                    burst.parentNode.removeChild(burst);
-                }
-            }
-        };
-        
-        grow();
     }
     
     animateTitle() {
@@ -611,13 +603,15 @@ class HolidayMagic {
         setInterval(() => {
             if (titleChars.length > 0) {
                 const randomChar = titleChars[Math.floor(Math.random() * titleChars.length)];
-                randomChar.style.animation = 'bounceIn 0.5s ease-out';
+                randomChar.style.transform = 'translateY(-10px)';
+                randomChar.style.color = '#ffd700';
                 
                 setTimeout(() => {
-                    randomChar.style.animation = '';
+                    randomChar.style.transform = 'translateY(0)';
+                    randomChar.style.color = '';
                 }, 500);
             }
-        }, 2000);
+        }, 3000);
     }
     
     animateTypingText() {
@@ -632,8 +626,11 @@ class HolidayMagic {
         let textIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
+        let isWaiting = false;
         
         const type = () => {
+            if (isWaiting) return;
+            
             const currentText = texts[textIndex];
             
             if (this.elements.typingText) {
@@ -647,13 +644,21 @@ class HolidayMagic {
                 
                 if (!isDeleting && charIndex === currentText.length) {
                     isDeleting = true;
-                    setTimeout(type, 2000);
+                    isWaiting = true;
+                    setTimeout(() => {
+                        isWaiting = false;
+                        type();
+                    }, 2000);
                 } else if (isDeleting && charIndex === 0) {
                     isDeleting = false;
                     textIndex = (textIndex + 1) % texts.length;
-                    setTimeout(type, 500);
+                    isWaiting = true;
+                    setTimeout(() => {
+                        isWaiting = false;
+                        type();
+                    }, 500);
                 } else {
-                    setTimeout(type, isDeleting ? 50 : 100);
+                    setTimeout(type, isDeleting ? 30 : 70);
                 }
             }
         };
@@ -666,8 +671,8 @@ class HolidayMagic {
             const sound = document.getElementById(soundId);
             if (sound) {
                 sound.currentTime = 0;
-                sound.volume = 0.3;
-                sound.play().catch(e => {
+                sound.volume = 0.2;
+                sound.play().catch(() => {
                     // Silent fail for audio
                 });
             }
@@ -677,21 +682,14 @@ class HolidayMagic {
     }
     
     showNotification(message) {
+        const existingNotification = document.querySelector('.custom-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
         const notification = document.createElement('div');
+        notification.className = 'custom-notification';
         notification.textContent = message;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, #ff6b6b, #ffd700);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            z-index: 10000;
-            animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 2.7s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            font-weight: bold;
-        `;
         
         document.body.appendChild(notification);
         
@@ -712,41 +710,43 @@ style.textContent = `
             opacity: 0;
         }
         10% {
-            opacity: 1;
+            opacity: 0.3;
         }
         90% {
-            opacity: 1;
+            opacity: 0.3;
         }
         100% {
-            transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(360deg);
+            transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(180deg);
             opacity: 0;
         }
     }
     
     @keyframes shake {
         0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-        20%, 40%, 60%, 80% { transform: translateX(10px); }
-    }
-    
-    @keyframes textFadeOut {
-        from { opacity: 1; transform: scale(1); }
-        to { opacity: 0; transform: scale(0.9); }
-    }
-    
-    @keyframes textFadeIn {
-        from { opacity: 0; transform: scale(1.1); }
-        to { opacity: 1; transform: scale(1); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
     
     @keyframes messageSlideOut {
-        from { opacity: 1; transform: translateX(0) scale(1); }
-        to { opacity: 0; transform: translateX(-100%) scale(0.9); }
+        from { 
+            opacity: 1; 
+            transform: translateX(0) scale(1); 
+        }
+        to { 
+            opacity: 0; 
+            transform: translateX(-50px) scale(0.95); 
+        }
     }
     
     @keyframes messageSlideIn {
-        from { opacity: 0; transform: translateX(100%) scale(0.9); }
-        to { opacity: 1; transform: translateX(0) scale(1); }
+        from { 
+            opacity: 0; 
+            transform: translateX(50px) scale(0.95); 
+        }
+        to { 
+            opacity: 1; 
+            transform: translateX(0) scale(1); 
+        }
     }
     
     @keyframes slideInRight {
@@ -757,6 +757,42 @@ style.textContent = `
     @keyframes fadeOut {
         from { opacity: 1; }
         to { opacity: 0; }
+    }
+    
+    @keyframes flipAnimation {
+        0% { transform: rotateX(0deg); }
+        50% { transform: rotateX(90deg); }
+        100% { transform: rotateX(0deg); }
+    }
+    
+    @keyframes progressShrink {
+        0% { transform: scaleX(1); }
+        100% { transform: scaleX(0); }
+    }
+    
+    .custom-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(45deg, #ff6b6b, #ffd700);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 10000;
+        animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 2.7s;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    
+    .greeting-section {
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+    
+    .input-section {
+        opacity: 1;
+        transition: opacity 0.5s ease-in-out;
     }
 `;
 document.head.appendChild(style);
@@ -773,18 +809,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.shareGreeting = () => holidayMagic.shareGreeting();
     window.resetExperience = () => holidayMagic.resetExperience();
     
-    // Make it globally available for debugging
+    // Make it globally available
     window.holidayMagic = holidayMagic;
-    
-    console.log('Holiday Magic initialized!');
 });
 
 // Add error handling for audio
 window.addEventListener('load', () => {
     const audioElements = document.querySelectorAll('audio');
     audioElements.forEach(audio => {
-        audio.addEventListener('error', (e) => {
-            console.log('Audio failed to load:', e.target.src);
-        });
+        audio.volume = 0.2;
     });
 });
