@@ -1,3 +1,4 @@
+
 // Holiday Magic Application
 class HolidayMagic {
     constructor() {
@@ -25,8 +26,17 @@ class HolidayMagic {
         this.startCountdown();
         this.startMessageAutoSlide();
         this.animateTypingText();
-        this.forceTextVisibility(); // Emergency text fix
         requestAnimationFrame((timestamp) => this.animationLoop(timestamp));
+        
+        // Ensure greeting section is hidden initially
+        if (this.elements.greetingSection) {
+            this.elements.greetingSection.style.display = 'none';
+        }
+        
+        // Ensure input section is visible
+        if (this.elements.inputSection) {
+            this.elements.inputSection.style.display = 'block';
+        }
     }
     
     cacheElements() {
@@ -162,38 +172,26 @@ class HolidayMagic {
         this.state.userName = name;
         this.playSound('magicSound');
         
-        // Smooth transition
-        this.animateTransition(() => {
-            if (this.elements.inputSection) {
-                this.elements.inputSection.style.opacity = '0';
-                setTimeout(() => {
-                    this.elements.inputSection.style.display = 'none';
-                }, 500);
-            }
-            if (this.elements.greetingSection) {
-                this.elements.greetingSection.style.display = 'block';
-                setTimeout(() => {
-                    this.elements.greetingSection.style.opacity = '1';
-                }, 10);
-            }
-            this.updateGreeting();
-            this.triggerCelebration();
-        });
-    }
-    
-    animateTransition(callback) {
-        const magicCircle = document.querySelector('.magic-circle');
-        if (magicCircle) {
-            magicCircle.style.transform = 'translate(-50%, -50%) scale(1.5)';
-            magicCircle.style.opacity = '0.8';
+        // Hide input section, show greeting section
+        if (this.elements.inputSection) {
+            this.elements.inputSection.style.opacity = '0';
+            this.elements.inputSection.style.transform = 'translateY(20px)';
             
             setTimeout(() => {
-                magicCircle.style.transform = 'translate(-50%, -50%) scale(1)';
-                magicCircle.style.opacity = '0.3';
-                callback();
-            }, 600);
-        } else {
-            callback();
+                this.elements.inputSection.style.display = 'none';
+                
+                // Show greeting section with animation
+                if (this.elements.greetingSection) {
+                    this.elements.greetingSection.style.display = 'block';
+                    setTimeout(() => {
+                        this.elements.greetingSection.style.opacity = '1';
+                        this.elements.greetingSection.style.transform = 'translateY(0)';
+                    }, 50);
+                }
+                
+                this.updateGreeting();
+                this.triggerCelebration();
+            }, 500);
         }
     }
     
@@ -479,17 +477,29 @@ class HolidayMagic {
         if (this.elements.userNameInput) {
             this.elements.userNameInput.value = '';
         }
-        if (this.elements.inputSection) {
-            this.elements.inputSection.style.display = 'block';
-            this.elements.inputSection.style.opacity = '1';
-        }
-        if (this.elements.greetingSection) {
-            this.elements.greetingSection.style.display = 'none';
-            this.elements.greetingSection.style.opacity = '0';
-        }
         
-        if (this.elements.userNameInput) {
-            this.elements.userNameInput.focus();
+        // Hide greeting section
+        if (this.elements.greetingSection) {
+            this.elements.greetingSection.style.opacity = '0';
+            this.elements.greetingSection.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                this.elements.greetingSection.style.display = 'none';
+                
+                // Show input section with animation
+                if (this.elements.inputSection) {
+                    this.elements.inputSection.style.display = 'block';
+                    setTimeout(() => {
+                        this.elements.inputSection.style.opacity = '1';
+                        this.elements.inputSection.style.transform = 'translateY(0)';
+                    }, 50);
+                }
+                
+                // Focus on input
+                if (this.elements.userNameInput) {
+                    this.elements.userNameInput.focus();
+                }
+            }, 500);
         }
         
         this.resetAutoSlide();
@@ -572,38 +582,6 @@ class HolidayMagic {
         setTimeout(type, 1000);
     }
     
-    forceTextVisibility() {
-        // Emergency text visibility fix
-        const allTextElements = document.querySelectorAll('body *');
-        allTextElements.forEach(el => {
-            if (el.textContent && el.textContent.trim() !== '') {
-                const style = window.getComputedStyle(el);
-                const color = style.color;
-                
-                // If text is black or transparent, force it to be visible
-                if (color === 'rgba(0, 0, 0, 0)' || color === 'rgb(0, 0, 0)' || 
-                    style.opacity === '0' || style.visibility === 'hidden') {
-                    
-                    if (el.classList.contains('main-title') || el.classList.contains('greeting-title') || 
-                        el.classList.contains('name-text') || el.classList.contains('time-value') ||
-                        el.classList.contains('creator-name')) {
-                        
-                        el.style.color = '#FFD700 !important';
-                        el.style.textShadow = '2px 2px 4px #000000, 0 0 10px rgba(255, 215, 0, 0.7) !important';
-                        el.style.webkitTextFillColor = '#FFD700 !important';
-                    } else {
-                        el.style.color = '#FFFFFF !important';
-                        el.style.textShadow = '1px 1px 3px #000000 !important';
-                        el.style.webkitTextFillColor = '#FFFFFF !important';
-                    }
-                    
-                    el.style.opacity = '1 !important';
-                    el.style.visibility = 'visible !important';
-                }
-            }
-        });
-    }
-    
     playSound(soundId) {
         try {
             const sound = document.getElementById(soundId);
@@ -669,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.holidayMagic = holidayMagic;
 });
 
-// Add missing CSS animations
+// Add CSS animations
 const style = document.createElement('style');
 style.textContent = `
     @keyframes shake {
@@ -722,12 +700,14 @@ style.textContent = `
     
     .greeting-section {
         opacity: 0;
-        transition: opacity 0.5s ease-in-out;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
     }
     
     .input-section {
         opacity: 1;
-        transition: opacity 0.5s ease-in-out;
+        transform: translateY(0);
+        transition: opacity 0.5s ease, transform 0.5s ease;
     }
 `;
 document.head.appendChild(style);
