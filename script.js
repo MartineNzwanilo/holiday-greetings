@@ -1,5 +1,4 @@
-
-// Holiday Magic Application
+// Holiday Magic Application with Music Control
 class HolidayMagic {
     constructor() {
         this.state = {
@@ -7,6 +6,7 @@ class HolidayMagic {
             currentMessage: 0,
             totalMessages: 10,
             isSnowActive: true,
+            isMusicPlaying: false,
             autoSlideInterval: null,
             countdownInterval: null,
             slideCountdown: 10,
@@ -16,6 +16,7 @@ class HolidayMagic {
             frameRate: 60
         };
         
+        this.audioManager = null;
         this.initialize();
     }
     
@@ -26,6 +27,7 @@ class HolidayMagic {
         this.startCountdown();
         this.startMessageAutoSlide();
         this.animateTypingText();
+        this.initAudioManager();
         requestAnimationFrame((timestamp) => this.animationLoop(timestamp));
         
         // Ensure greeting section is hidden initially
@@ -56,19 +58,130 @@ class HolidayMagic {
             minutes: document.getElementById('minutes'),
             seconds: document.getElementById('seconds'),
             snowCanvas: document.getElementById('snowCanvas'),
-            snowText: document.getElementById('snowText')
+            snowText: document.getElementById('snowText'),
+            musicToggle: document.getElementById('musicToggle'),
+            musicText: document.getElementById('musicText'),
+            volumeSlider: document.getElementById('volumeSlider')
         };
     }
     
     setupEventListeners() {
+        // Start button
         if (this.elements.startBtn) {
             this.elements.startBtn.addEventListener('click', () => this.startGreeting());
         }
         
+        // Enter key in name input
         if (this.elements.userNameInput) {
             this.elements.userNameInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') this.startGreeting();
             });
+        }
+        
+        // Music toggle
+        if (this.elements.musicToggle) {
+            this.elements.musicToggle.addEventListener('click', () => this.toggleMusic());
+        }
+        
+        // Volume control
+        if (this.elements.volumeSlider) {
+            this.elements.volumeSlider.addEventListener('input', () => this.updateVolume());
+        }
+    }
+    
+    initAudioManager() {
+        this.audioManager = {
+            backgroundMusic: document.getElementById('backgroundMusic'),
+            snowAudio: document.getElementById('snowSound'),
+            
+            playSound(soundId, options = {}) {
+                try {
+                    const sound = document.getElementById(soundId);
+                    if (!sound) return null;
+                    
+                    const {
+                        volume = 0.5,
+                        resetTime = true,
+                        allowOverlap = false,
+                        loop = false
+                    } = options;
+                    
+                    if (!allowOverlap && !sound.paused && !sound.ended) {
+                        return null;
+                    }
+                    
+                    const soundToPlay = allowOverlap ? sound.cloneNode() : sound;
+                    
+                    if (resetTime) soundToPlay.currentTime = 0;
+                    soundToPlay.volume = volume;
+                    soundToPlay.loop = loop;
+                    
+                    soundToPlay.play().catch(e => {
+                        if (e.name === 'NotAllowedError') {
+                            console.log('Audio play blocked');
+                        }
+                    });
+                    
+                    return soundToPlay;
+                } catch (e) {
+                    console.error('Error playing sound:', e);
+                    return null;
+                }
+            },
+            
+            playClick() {
+                return this.playSound('clickSound', { volume: 0.3 });
+            },
+            
+            playMagic() {
+                return this.playSound('magicSound', { volume: 0.4 });
+            },
+            
+            playTransition() {
+                return this.playSound('transitionSound', { volume: 0.5 });
+            },
+            
+            playBell() {
+                return this.playSound('bellSound', { volume: 0.4 });
+            },
+            
+            playFirework() {
+                return this.playSound('fireworkSound', { volume: 0.6, allowOverlap: true });
+            },
+            
+            playNotification() {
+                return this.playSound('notificationSound', { volume: 0.5 });
+            },
+            
+            toggleSnowSound(play) {
+                if (!this.snowAudio) return;
+                
+                if (play) {
+                    this.snowAudio.currentTime = 0;
+                    this.snowAudio.play().catch(() => {});
+                } else {
+                    this.snowAudio.pause();
+                }
+            },
+            
+            stopAllSounds() {
+                const allAudio = document.querySelectorAll('audio');
+                allAudio.forEach(audio => {
+                    if (audio !== this.backgroundMusic) {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    }
+                });
+            }
+        };
+        
+        // Set initial volume from slider
+        if (this.elements.volumeSlider && this.audioManager.backgroundMusic) {
+            const initialVolume = this.elements.volumeSlider.value / 100;
+            this.audioManager.backgroundMusic.volume = initialVolume;
+            if (this.audioManager.snowAudio) {
+                this.audioManager.snowAudio.volume = Math.min(0.2, initialVolume);
+            }
         }
     }
     
@@ -79,14 +192,11 @@ class HolidayMagic {
         const ctx = canvas.getContext('2d');
         this.state.snowCtx = ctx;
         
-        // Set canvas size
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
-        // Create snowflakes
         this.createSnowflakes();
         
-        // Handle window resize
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -133,7 +243,6 @@ class HolidayMagic {
         const ctx = this.state.snowCtx;
         const canvas = this.elements.snowCanvas;
         
-        // Clear with slight transparency for trail effect
         ctx.fillStyle = 'rgba(10, 10, 30, 0.1)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
@@ -147,17 +256,56 @@ class HolidayMagic {
             ctx.globalAlpha = flake.opacity;
             ctx.fill();
             
-            // Update position
             flake.y += flake.speed;
             flake.x += flake.wind;
             
-            // Reset if out of bounds
             if (flake.y > canvas.height + 10) {
                 flake.y = -10;
                 flake.x = Math.random() * canvas.width;
             }
             if (flake.x > canvas.width + 10) flake.x = -10;
             if (flake.x < -10) flake.x = canvas.width + 10;
+        });
+    }
+    
+    toggleMusic() {
+        if (!this.audioManager || !this.audioManager.backgroundMusic) return;
+        
+        if (this.audioManager.backgroundMusic.paused) {
+            this.audioManager.backgroundMusic.play()
+                .then(() => {
+                    this.state.isMusicPlaying = true;
+                    this.elements.musicText.textContent = 'Pause Music';
+                    this.elements.musicToggle.querySelector('i').className = 'fas fa-volume-mute';
+                    this.audioManager.playClick();
+                })
+                .catch(error => {
+                    console.log('Music play blocked:', error);
+                    this.elements.musicText.textContent = 'Play Music';
+                    this.elements.musicToggle.querySelector('i').className = 'fas fa-volume-up';
+                });
+        } else {
+            this.audioManager.backgroundMusic.pause();
+            this.state.isMusicPlaying = false;
+            this.elements.musicText.textContent = 'Play Music';
+            this.elements.musicToggle.querySelector('i').className = 'fas fa-volume-up';
+            this.audioManager.playClick();
+        }
+    }
+    
+    updateVolume() {
+        if (!this.elements.volumeSlider || !this.audioManager) return;
+        
+        const volume = this.elements.volumeSlider.value / 100;
+        
+        // Update all audio elements
+        const allAudio = document.querySelectorAll('audio');
+        allAudio.forEach(audio => {
+            if (audio.id === 'snowSound') {
+                audio.volume = Math.min(0.2, volume);
+            } else {
+                audio.volume = volume;
+            }
         });
     }
     
@@ -170,9 +318,8 @@ class HolidayMagic {
         }
         
         this.state.userName = name;
-        this.playSound('magicSound');
+        this.audioManager.playMagic();
         
-        // Hide input section, show greeting section
         if (this.elements.inputSection) {
             this.elements.inputSection.style.opacity = '0';
             this.elements.inputSection.style.transform = 'translateY(20px)';
@@ -180,7 +327,6 @@ class HolidayMagic {
             setTimeout(() => {
                 this.elements.inputSection.style.display = 'none';
                 
-                // Show greeting section with animation
                 if (this.elements.greetingSection) {
                     this.elements.greetingSection.style.display = 'block';
                     setTimeout(() => {
@@ -199,34 +345,27 @@ class HolidayMagic {
         const nameElement = this.elements.nameDisplay?.querySelector('.name-text');
         
         if (nameElement && this.state.userName) {
-            this.animateTextChange(nameElement, this.state.userName);
+            nameElement.style.transform = 'scale(1.2)';
+            nameElement.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                nameElement.textContent = this.state.userName;
+                nameElement.style.transform = 'scale(1)';
+                nameElement.style.opacity = '1';
+            }, 300);
         }
         
-        // Update greeting title
         if (this.elements.greetingTitle) {
             const titles = ["Special Greetings", "Holiday Wishes", "Season's Greetings", "Warmest Wishes"];
             const randomTitle = titles[Math.floor(Math.random() * titles.length)];
             this.elements.greetingTitle.textContent = randomTitle;
         }
         
-        // Show current message
         this.showMessage(this.state.currentMessage);
         
-        // Update message counter
         if (this.elements.currentMessage) {
             this.elements.currentMessage.textContent = this.state.currentMessage + 1;
         }
-    }
-    
-    animateTextChange(element, newText) {
-        element.style.transform = 'scale(1.2)';
-        element.style.opacity = '0.5';
-        
-        setTimeout(() => {
-            element.textContent = newText;
-            element.style.transform = 'scale(1)';
-            element.style.opacity = '1';
-        }, 300);
     }
     
     showMessage(index) {
@@ -243,7 +382,7 @@ class HolidayMagic {
                 messages[index].classList.add('active');
                 messages[index].style.animation = 'messageSlideIn 0.8s ease-out forwards';
                 
-                // Add typing effect
+                // Typewriter effect
                 this.typeMessageText(messages[index]);
             }
         }, 400);
@@ -269,31 +408,26 @@ class HolidayMagic {
         this.state.currentMessage = (this.state.currentMessage + 1) % this.state.totalMessages;
         this.updateGreeting();
         this.resetAutoSlide();
-        this.playSound('clickSound');
+        this.audioManager.playClick();
     }
     
     startMessageAutoSlide() {
-        // Clear any existing interval
         if (this.state.autoSlideInterval) {
             clearInterval(this.state.autoSlideInterval);
         }
         
-        // Start auto-slide countdown
         this.startAutoSlideCountdown();
         
-        // Start auto-slide interval
         this.state.autoSlideInterval = setInterval(() => {
             this.nextMessage();
-        }, 10000); // 10 seconds
+        }, 10000);
     }
     
     startAutoSlideCountdown() {
         this.state.slideCountdown = 10;
         
-        const countdownElement = this.elements.countdownDisplay;
-        if (!countdownElement) return;
+        if (!this.elements.countdownDisplay) return;
         
-        // Clear any existing countdown interval
         if (this.state.countdownInterval) {
             clearInterval(this.state.countdownInterval);
         }
@@ -301,8 +435,8 @@ class HolidayMagic {
         this.state.countdownInterval = setInterval(() => {
             this.state.slideCountdown--;
             
-            if (countdownElement) {
-                countdownElement.textContent = this.state.slideCountdown;
+            if (this.elements.countdownDisplay) {
+                this.elements.countdownDisplay.textContent = this.state.slideCountdown;
             }
             
             if (this.state.slideCountdown <= 0) {
@@ -319,18 +453,16 @@ class HolidayMagic {
     }
     
     startCountdown() {
-        // Update New Year 2026 countdown every second
         this.updateNewYearCountdown();
         setInterval(() => this.updateNewYearCountdown(), 1000);
     }
     
     updateNewYearCountdown() {
         const now = new Date();
-        const newYear = new Date(2026, 0, 1); // January 1, 2026
+        const newYear = new Date(2026, 0, 1);
         const diff = newYear - now;
         
         if (diff <= 0) {
-            // If New Year has passed, set to next year
             newYear.setFullYear(2027);
         }
         
@@ -339,14 +471,13 @@ class HolidayMagic {
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         
-        // Update elements
-        this.safeUpdateElement('days', days.toString().padStart(2, '0'));
-        this.safeUpdateElement('hours', hours.toString().padStart(2, '0'));
-        this.safeUpdateElement('minutes', minutes.toString().padStart(2, '0'));
-        this.safeUpdateElement('seconds', seconds.toString().padStart(2, '0'));
+        this.updateCountdownElement('days', days.toString().padStart(2, '0'));
+        this.updateCountdownElement('hours', hours.toString().padStart(2, '0'));
+        this.updateCountdownElement('minutes', minutes.toString().padStart(2, '0'));
+        this.updateCountdownElement('seconds', seconds.toString().padStart(2, '0'));
     }
     
-    safeUpdateElement(id, value) {
+    updateCountdownElement(id, value) {
         const element = document.getElementById(id);
         if (element && element.textContent !== value) {
             element.classList.add('flip');
@@ -358,7 +489,7 @@ class HolidayMagic {
     }
     
     triggerFireworks() {
-        this.playSound('magicSound');
+        this.audioManager.playFirework();
         
         for (let i = 0; i < 3; i++) {
             setTimeout(() => {
@@ -399,7 +530,6 @@ class HolidayMagic {
                 
                 document.body.appendChild(particle);
                 
-                // Animate particle
                 setTimeout(() => {
                     const dx = Math.cos(angle) * velocity * 50;
                     const dy = Math.sin(angle) * velocity * 50;
@@ -407,7 +537,6 @@ class HolidayMagic {
                     particle.style.transform = `translate(${dx}px, ${dy}px)`;
                     particle.style.opacity = '0';
                     
-                    // Remove after animation
                     setTimeout(() => {
                         if (particle.parentNode) {
                             particle.parentNode.removeChild(particle);
@@ -421,12 +550,14 @@ class HolidayMagic {
     toggleSnow() {
         this.state.isSnowActive = !this.state.isSnowActive;
         
-        // Update button text
         if (this.elements.snowText) {
             this.elements.snowText.textContent = this.state.isSnowActive ? 'Snow Off' : 'Snow On';
         }
         
-        // Visual feedback
+        if (this.audioManager) {
+            this.audioManager.toggleSnowSound(this.state.isSnowActive);
+        }
+        
         const btn = document.getElementById('snowToggle');
         if (btn) {
             btn.style.transform = 'scale(0.95)';
@@ -435,10 +566,7 @@ class HolidayMagic {
             }, 200);
         }
         
-        // Play sound
-        this.playSound('clickSound');
-        
-        // Show notification
+        this.audioManager.playClick();
         this.showNotification(
             this.state.isSnowActive ? 
             '❄️ Snow effect enabled!' : 
@@ -478,7 +606,6 @@ class HolidayMagic {
             this.elements.userNameInput.value = '';
         }
         
-        // Hide greeting section
         if (this.elements.greetingSection) {
             this.elements.greetingSection.style.opacity = '0';
             this.elements.greetingSection.style.transform = 'translateY(20px)';
@@ -486,7 +613,6 @@ class HolidayMagic {
             setTimeout(() => {
                 this.elements.greetingSection.style.display = 'none';
                 
-                // Show input section with animation
                 if (this.elements.inputSection) {
                     this.elements.inputSection.style.display = 'block';
                     setTimeout(() => {
@@ -495,7 +621,6 @@ class HolidayMagic {
                     }, 50);
                 }
                 
-                // Focus on input
                 if (this.elements.userNameInput) {
                     this.elements.userNameInput.focus();
                 }
@@ -503,7 +628,7 @@ class HolidayMagic {
         }
         
         this.resetAutoSlide();
-        this.playSound('clickSound');
+        this.audioManager.playClick();
     }
     
     shakeInput() {
@@ -518,7 +643,6 @@ class HolidayMagic {
     triggerCelebration() {
         this.triggerFireworks();
         
-        // Animate icons
         const icons = document.querySelectorAll('.holiday-icons i');
         icons.forEach((icon, index) => {
             setTimeout(() => {
@@ -582,21 +706,6 @@ class HolidayMagic {
         setTimeout(type, 1000);
     }
     
-    playSound(soundId) {
-        try {
-            const sound = document.getElementById(soundId);
-            if (sound) {
-                sound.currentTime = 0;
-                sound.volume = 0.2;
-                sound.play().catch(() => {
-                    // Silent fail for audio
-                });
-            }
-        } catch (e) {
-            // Silent fail
-        }
-    }
-    
     showNotification(message) {
         const existingNotification = document.querySelector('.custom-notification');
         if (existingNotification) {
@@ -633,7 +742,6 @@ class HolidayMagic {
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    // Create the HolidayMagic instance
     const holidayMagic = new HolidayMagic();
     
     // Global functions for button onclick handlers
@@ -642,6 +750,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.toggleSnow = () => holidayMagic.toggleSnow();
     window.shareGreeting = () => holidayMagic.shareGreeting();
     window.resetExperience = () => holidayMagic.resetExperience();
+    window.toggleMusic = () => holidayMagic.toggleMusic();
     
     // Make it globally available
     window.holidayMagic = holidayMagic;
@@ -708,6 +817,19 @@ style.textContent = `
         opacity: 1;
         transform: translateY(0);
         transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    
+    /* Music button animations */
+    .music-control-btn {
+        transition: all 0.3s ease !important;
+    }
+    
+    .music-control-btn:hover {
+        transform: translateY(-2px) !important;
+    }
+    
+    .music-control-btn:active {
+        transform: translateY(0) !important;
     }
 `;
 document.head.appendChild(style);
