@@ -1285,233 +1285,267 @@ body {
 }
 
 /* ============================================
-   INTERACTIVE CONTROLS
+   INTERACTIVE CONTROLS - COMPACT VERSION
    ============================================ */
 .interactive-controls {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
-    margin: 40px 0;
-    padding: 30px;
-    background: rgba(10, 10, 40, 0.7);
-    border-radius: 25px;
-    border: 2px solid rgba(255, 215, 0, 0.3);
-    backdrop-filter: blur(10px);
+    gap: 12px;
+    margin: 25px 0;
+    padding: 15px;
+    background: rgba(10, 10, 40, 0.5);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    backdrop-filter: blur(5px);
     box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    animation: controlsGlow 6s ease-in-out infinite;
-}
-
-@keyframes controlsGlow {
-    0%, 100% { 
-        border-color: rgba(255, 215, 0, 0.3);
-        box-shadow: 
-            0 15px 35px rgba(0, 0, 0, 0.4),
-            inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    }
-    50% { 
-        border-color: rgba(255, 107, 107, 0.4);
-        box-shadow: 
-            0 15px 45px rgba(0, 0, 0, 0.5),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2),
-            0 0 40px rgba(255, 107, 107, 0.2);
-    }
+        0 8px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .action-btn {
     position: relative;
-    padding: 18px 28px;
+    padding: 12px 20px;
     background: linear-gradient(135deg, 
-        rgba(255, 107, 107, 0.8) 0%,
-        rgba(255, 215, 0, 0.8) 50%,
-        rgba(78, 205, 196, 0.8) 100%);
+        rgba(255, 107, 107, 0.7) 0%,
+        rgba(255, 215, 0, 0.7) 50%,
+        rgba(78, 205, 196, 0.7) 100%);
     border: none;
-    border-radius: 16px;
+    border-radius: 12px;
     color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    font-size: 1.1rem;
+    gap: 8px;
+    font-size: 0.9rem;
     font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    min-width: 160px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease;
+    min-width: 120px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     box-shadow: 
-        0 8px 25px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
     overflow: hidden;
-    backdrop-filter: blur(5px);
 }
 
 .action-btn:hover {
-    transform: translateY(-8px) scale(1.05);
+    transform: translateY(-2px);
     box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(255, 215, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        0 6px 12px rgba(0, 0, 0, 0.3),
+        0 0 10px rgba(255, 215, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     background: linear-gradient(135deg, 
-        rgba(255, 107, 107, 1) 0%,
-        rgba(255, 215, 0, 1) 50%,
-        rgba(78, 205, 196, 1) 100%);
-    animation: actionBtnPulse 1.5s infinite alternate;
-}
-
-@keyframes actionBtnPulse {
-    0% { 
-        transform: translateY(-8px) scale(1.05);
-        box-shadow: 
-            0 15px 35px rgba(0, 0, 0, 0.5),
-            0 0 30px rgba(255, 215, 0, 0.5);
-    }
-    100% { 
-        transform: translateY(-8px) scale(1.08);
-        box-shadow: 
-            0 15px 40px rgba(0, 0, 0, 0.6),
-            0 0 40px rgba(255, 215, 0, 0.7);
-    }
+        rgba(255, 107, 107, 0.9) 0%,
+        rgba(255, 215, 0, 0.9) 50%,
+        rgba(78, 205, 196, 0.9) 100%);
 }
 
 .action-btn:active {
-    transform: translateY(-4px) scale(1.02);
+    transform: translateY(-1px);
 }
 
 .action-btn i {
-    font-size: 1.3rem;
+    font-size: 1rem;
     color: white;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
-    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+    transition: all 0.2s ease;
 }
 
 .action-btn:hover i {
-    transform: scale(1.2) rotate(15deg);
-    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1));
+    transform: scale(1.1);
 }
 
 /* Individual button variations */
-.action-btn:nth-child(1) { background: linear-gradient(135deg, #ff6b6b 0%, #ff8c00 100%); }
-.action-btn:nth-child(2) { background: linear-gradient(135deg, #4ecdc4 0%, #45b7d1 100%); }
-.action-btn:nth-child(3) { background: linear-gradient(135deg, #9d4edd 0%, #ff6b6b 100%); }
-.action-btn:nth-child(4) { background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); }
-
-/* Button glow effect */
-.action-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.3),
-        transparent
-    );
-    animation: btnLightSweep 3s ease-in-out infinite;
-}
-
-@keyframes btnLightSweep {
-    0% { left: -100%; }
-    100% { left: 100%; }
-}
+.action-btn:nth-child(1) { background: linear-gradient(135deg, rgba(255, 107, 107, 0.7) 0%, rgba(255, 140, 0, 0.7) 100%); }
+.action-btn:nth-child(2) { background: linear-gradient(135deg, rgba(78, 205, 196, 0.7) 0%, rgba(69, 183, 209, 0.7) 100%); }
+.action-btn:nth-child(3) { background: linear-gradient(135deg, rgba(157, 78, 221, 0.7) 0%, rgba(255, 107, 107, 0.7) 100%); }
+.action-btn:nth-child(4) { background: linear-gradient(135deg, rgba(255, 215, 0, 0.7) 0%, rgba(255, 140, 0, 0.7) 100%); }
 
 /* ============================================
-   VOLUME CONTROL STYLING
+   VOLUME CONTROL - COMPACT VERSION
    ============================================ */
 .volume-control {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 15px 25px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    border: 2px solid rgba(255, 215, 0, 0.3);
-    transition: all 0.3s ease;
-    min-width: 200px;
-    backdrop-filter: blur(10px);
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    transition: all 0.2s ease;
+    min-width: 140px;
 }
 
 .volume-control:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 215, 0, 0.6);
-    box-shadow: 
-        0 5px 20px rgba(255, 215, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 215, 0, 0.4);
 }
 
 .volume-control i {
     color: var(--primary-gold);
-    font-size: 1.2rem;
-    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
-    transition: all 0.3s ease;
-}
-
-.volume-control:hover i {
-    transform: scale(1.2);
-    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.9));
+    font-size: 0.9rem;
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.4));
 }
 
 #volumeSlider {
     flex: 1;
-    height: 8px;
+    height: 4px;
     -webkit-appearance: none;
     background: linear-gradient(90deg, 
         #ff6b6b, 
         #ff8c00,
         #ffd700,
-        #4ecdc4,
-        #45b7d1,
-        #9d4edd);
-    border-radius: 4px;
+        #4ecdc4);
+    border-radius: 2px;
     outline: none;
     cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-#volumeSlider:hover {
-    height: 10px;
-    box-shadow: 
-        0 0 15px rgba(255, 107, 107, 0.5),
-        0 0 25px rgba(255, 215, 0, 0.4);
 }
 
 #volumeSlider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: white;
     cursor: pointer;
-    border: 3px solid var(--primary-gold);
-    box-shadow: 
-        0 0 20px rgba(255, 215, 0, 0.9),
-        0 0 40px rgba(255, 215, 0, 0.6);
-    transition: all 0.3s ease;
-}
-
-#volumeSlider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 
-        0 0 25px rgba(255, 215, 0, 1),
-        0 0 50px rgba(255, 215, 0, 0.8);
+    border: 2px solid var(--primary-gold);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
 }
 
 #volumeSlider::-moz-range-thumb {
-    width: 22px;
-    height: 22px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: white;
     cursor: pointer;
-    border: 3px solid var(--primary-gold);
-    box-shadow: 
-        0 0 20px rgba(255, 215, 0, 0.9),
-        0 0 40px rgba(255, 215, 0, 0.6);
+    border: 2px solid var(--primary-gold);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
 }
+
+/* ============================================
+   CREATOR CREDIT - COMPACT VERSION
+   ============================================ */
+.creator-credit {
+    margin-top: 20px;
+    text-align: center;
+    padding: 15px 20px;
+    background: rgba(10, 10, 30, 0.6);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    backdrop-filter: blur(5px);
+}
+
+.credit-content {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.credit-content i {
+    color: var(--primary-gold);
+    font-size: 0.8rem;
+}
+
+.credit-content .fa-heart {
+    color: #ff6b6b;
+    animation: heartBeat 1.5s ease-in-out infinite;
+}
+
+.creator-name {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.1rem;
+    font-weight: bold;
+    background: linear-gradient(45deg,
+        #ffd700 0%,
+        #ff8c00 25%,
+        #ff6b6b 50%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    padding: 0 8px;
+}
+
+.credit-year {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.credit-year::before,
+.credit-year::after {
+    content: '✨';
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN FOR SMALL SCREENS
+   ============================================ */
+@media (max-width: 768px) {
+    .interactive-controls {
+        padding: 10px;
+        gap: 8px;
+        margin: 20px 0;
+    }
+    
+    .action-btn {
+        padding: 10px 15px;
+        font-size: 0.8rem;
+        min-width: 100px;
+        gap: 6px;
+    }
+    
+    .action-btn i {
+        font-size: 0.9rem;
+    }
+    
+    .volume-control {
+        padding: 6px 10px;
+        min-width: 120px;
+    }
+    
+    .credit-content {
+        font-size: 0.8rem;
+        gap: 6px;
+    }
+    
+    .creator-name {
+        font-size: 1rem;
+    }
+    
+    .credit-year {
+        font-size: 0.7rem;
+        gap: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .interactive-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .action-btn {
+        width: 100%;
+        max-width: 200px;
+        padding: 10px;
+    }
+    
+    .volume-control {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+
+
 
 /* ============================================
    CREATOR CREDIT - BEAUTIFUL DESIGN
