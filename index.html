@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,113 +7,92 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Mountains+of+Christmas&display=swap" rel="stylesheet">
+    <style>
+        /* Inline emergency styles - guaranteed to work */
+        .emergency-text {
+            color: white !important;
+            text-shadow: 1px 1px 3px black !important;
+        }
+        .emergency-title {
+            color: #FFD700 !important;
+            text-shadow: 2px 2px 5px black, 0 0 20px gold !important;
+        }
+    </style>
 </head>
 <body>
-    <!-- Background Elements -->
-    <div class="floating-ornaments"></div>
-    <div class="sparkle-overlay"></div>
+    <!-- Background Effects -->
     <div class="aurora-effect"></div>
+    <div class="sparkle-overlay"></div>
     
     <!-- Main Container -->
     <div class="container">
-        <!-- Animated Header -->
+        <!-- Header with PERMANENTLY VISIBLE Text -->
         <div class="header">
             <div class="title-wrapper">
-                <h1 class="main-title">
-                    <span class="title-char" style="--i:1">🎄</span>
-                    <span class="title-char" style="--i:2">M</span>
-                    <span class="title-char" style="--i:3">e</span>
-                    <span class="title-char" style="--i:4">r</span>
-                    <span class="title-char" style="--i:5">r</span>
-                    <span class="title-char" style="--i:6">y</span>
-                    <span class="title-char" style="--i:7"></span>
-                    <span class="title-char" style="--i:8">C</span>
-                    <span class="title-char" style="--i:9">h</span>
-                    <span class="title-char" style="--i:10">r</span>
-                    <span class="title-char" style="--i:11">i</span>
-                    <span class="title-char" style="--i:12">s</span>
-                    <span class="title-char" style="--i:13">t</span>
-                    <span class="title-char" style="--i:14">m</span>
-                    <span class="title-char" style="--i:15">a</span>
-                    <span class="title-char" style="--i:16">s</span>
-                    <span class="title-char" style="--i:17"></span>
-                    <span class="title-char" style="--i:18">&</span>
-                    <span class="title-char" style="--i:19"></span>
-                    <span class="title-char" style="--i:20">🎉</span>
-                    <span class="title-char" style="--i:21">H</span>
-                    <span class="title-char" style="--i:22">a</span>
-                    <span class="title-char" style="--i:23">p</span>
-                    <span class="title-char" style="--i:24">p</span>
-                    <span class="title-char" style="--i:25">y</span>
-                    <span class="title-char" style="--i:26"></span>
-                    <span class="title-char" style="--i:27">N</span>
-                    <span class="title-char" style="--i:28">e</span>
-                    <span class="title-char" style="--i:29">w</span>
-                    <span class="title-char" style="--i:30"></span>
-                    <span class="title-char" style="--i:31">Y</span>
-                    <span class="title-char" style="--i:32">e</span>
-                    <span class="title-char" style="--i:33">a</span>
-                    <span class="title-char" style="--i:34">r</span>
-                    <span class="title-char" style="--i:35">!</span>
+                <h1 class="main-title emergency-title">
+                    <span class="title-part" style="--delay:0.1s">🎄</span>
+                    <span class="title-part" style="--delay:0.2s">Merry</span>
+                    <span class="title-part" style="--delay:0.3s">Christmas</span>
+                    <span class="title-part" style="--delay:0.4s">&</span>
+                    <span class="title-part" style="--delay:0.5s">🎉</span>
+                    <span class="title-part" style="--delay:0.6s">Happy</span>
+                    <span class="title-part" style="--delay:0.7s">New</span>
+                    <span class="title-part" style="--delay:0.8s">Year!</span>
                 </h1>
             </div>
             <div class="subtitle">
                 <i class="fas fa-star"></i>
-                <span class="typing-text" id="typingText">Your magical holiday experience awaits...</span>
+                <span class="typing-text emergency-text" id="typingText">Your magical holiday experience awaits...</span>
                 <i class="fas fa-star"></i>
             </div>
         </div>
 
-        <!-- Name Input with Enhanced Animation -->
+        <!-- Input Section -->
         <div class="input-section" id="inputSection">
             <div class="input-glow-container">
                 <div class="magic-circle"></div>
                 <div class="input-wrapper">
-                    <div class="input-label">
+                    <div class="input-label emergency-text">
                         <i class="fas fa-user-astronaut"></i>
                         Enter Your Name
                     </div>
                     <div class="input-group">
-                        <input type="text" id="userName" placeholder="Type your name here..." autocomplete="off">
+                        <input type="text" id="userName" placeholder="Type your name here..." autocomplete="off" class="emergency-text">
                         <div class="input-underline"></div>
                     </div>
-                    <button id="startBtn" class="magic-btn">
+                    <button id="startBtn" class="magic-btn emergency-text">
                         <span class="btn-text">Begin Magic</span>
                         <div class="btn-sparkle">
                             <i class="fas fa-sparkles"></i>
                         </div>
-                        <div class="btn-glow"></div>
                     </button>
                 </div>
-            </div>
-            <div class="input-hint">
-                <i class="fas fa-wand-magic-sparkles"></i>
-                Your name will unlock personalized holiday magic!
+                <div class="input-hint emergency-text">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    Your name will unlock personalized holiday magic!
+                </div>
             </div>
         </div>
 
         <!-- Greeting Display (Initially Hidden) -->
-        <div class="greeting-section" id="greetingSection" style="display: none;">
-            <!-- Floating Holiday Elements -->
-            <div class="holiday-orbit">
-                <div class="orbit-item" style="--angle:0deg"><i class="fas fa-tree"></i></div>
-                <div class="orbit-item" style="--angle:72deg"><i class="fas fa-star"></i></div>
-                <div class="orbit-item" style="--angle:144deg"><i class="fas fa-gift"></i></div>
-                <div class="orbit-item" style="--angle:216deg"><i class="fas fa-snowflake"></i></div>
-                <div class="orbit-item" style="--angle:288deg"><i class="fas fa-bell"></i></div>
+        <div class="greeting-section" id="greetingSection">
+            <!-- Floating Icons -->
+            <div class="holiday-icons">
+                <i class="fas fa-tree"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-gift"></i>
+                <i class="fas fa-snowflake"></i>
+                <i class="fas fa-bell"></i>
             </div>
 
-            <!-- Central Greeting Card -->
+            <!-- Greeting Card -->
             <div class="greeting-card-wrapper">
                 <div class="greeting-card">
-                    <div class="card-shine"></div>
-                    <div class="card-border-animation"></div>
-                    
                     <div class="greeting-header">
                         <div class="greeting-icon-left">
                             <i class="fas fa-quote-left"></i>
                         </div>
-                        <div class="greeting-title" id="greetingTitle">
+                        <div class="greeting-title emergency-title" id="greetingTitle">
                             Special Greetings
                         </div>
                         <div class="greeting-icon-right">
@@ -124,58 +102,57 @@
 
                     <div class="greeting-body">
                         <div class="name-display-container">
-                            <div class="name-glow-effect"></div>
                             <div class="name-display" id="nameDisplay">
-                                <span class="name-text">Friend</span>
+                                <span class="name-text emergency-title">Friend</span>
                                 <div class="name-trail"></div>
                             </div>
                         </div>
 
                         <div class="message-container">
                             <div class="message-slider">
-                                <div class="message active" id="message1">
+                                <div class="message active emergency-text" id="message1">
                                     May your Christmas sparkle with moments of love, laughter, and goodwill!
                                 </div>
-                                <div class="message" id="message2">
+                                <div class="message emergency-text" id="message2">
                                     Wishing you a season full of light and laughter for you and your family!
                                 </div>
-                                <div class="message" id="message3">
+                                <div class="message emergency-text" id="message3">
                                     May the magic of Christmas fill every corner of your heart and home!
                                 </div>
-                                <div class="message" id="message4">
+                                <div class="message emergency-text" id="message4">
                                     Here's to a Christmas that's merry and bright, and a New Year that's full of light!
                                 </div>
-                                <div class="message" id="message5">
+                                <div class="message emergency-text" id="message5">
                                     May your holidays be wrapped in happiness and tied with love!
                                 </div>
-                                <div class="message" id="message6">
+                                <div class="message emergency-text" id="message6">
                                     Sending you warm wishes for a joyful Christmas and a wonderful New Year!
                                 </div>
-                                <div class="message" id="message7">
+                                <div class="message emergency-text" id="message7">
                                     May your Christmas be decorated with cheer and filled with love!
                                 </div>
-                                <div class="message" id="message8">
+                                <div class="message emergency-text" id="message8">
                                     Wishing you peace, joy, and all the best this wonderful holiday!
                                 </div>
-                                <div class="message" id="message9">
+                                <div class="message emergency-text" id="message9">
                                     May the spirit of Christmas bring you peace, the gladness of Christmas give you hope!
                                 </div>
-                                <div class="message" id="message10">
+                                <div class="message emergency-text" id="message10">
                                     Here's hoping your Christmas is filled with wonderful surprises and happiness!
                                 </div>
                             </div>
-                            <div class="message-indicator">
+                            <div class="message-indicator emergency-text">
                                 <span class="current-message">1</span> / <span class="total-messages">10</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="greeting-footer">
-                        <div class="auto-slide-indicator">
+                        <div class="auto-slide-indicator emergency-text">
                             <i class="fas fa-sync-alt spin"></i>
-                            <span>Auto-changing in </span><span id="countdown">7</span><span>s</span>
+                            Auto-changing in <span id="countdown">10</span>s
                         </div>
-                        <button class="control-btn next-btn" onclick="nextMessage()">
+                        <button class="control-btn next-btn emergency-text" onclick="nextMessage()">
                             <i class="fas fa-forward"></i> Next Message
                         </button>
                     </div>
@@ -184,53 +161,50 @@
 
             <!-- Countdown Section -->
             <div class="countdown-section">
-                <div class="countdown-title">
+                <div class="countdown-title emergency-title">
                     <i class="fas fa-hourglass-end"></i>
                     <span>Countdown to New Year 2026</span>
                     <i class="fas fa-hourglass-end"></i>
                 </div>
                 <div class="countdown-display">
                     <div class="time-block">
-                        <div class="time-value flip" id="days">00</div>
-                        <div class="time-label">Days</div>
+                        <div class="time-value emergency-title" id="days">00</div>
+                        <div class="time-label emergency-text">Days</div>
                     </div>
                     <div class="time-separator">:</div>
                     <div class="time-block">
-                        <div class="time-value flip" id="hours">00</div>
-                        <div class="time-label">Hours</div>
+                        <div class="time-value emergency-title" id="hours">00</div>
+                        <div class="time-label emergency-text">Hours</div>
                     </div>
                     <div class="time-separator">:</div>
                     <div class="time-block">
-                        <div class="time-value flip" id="minutes">00</div>
-                        <div class="time-label">Minutes</div>
+                        <div class="time-value emergency-title" id="minutes">00</div>
+                        <div class="time-label emergency-text">Minutes</div>
                     </div>
                     <div class="time-separator">:</div>
                     <div class="time-block">
-                        <div class="time-value flip" id="seconds">00</div>
-                        <div class="time-label">Seconds</div>
+                        <div class="time-value emergency-title" id="seconds">00</div>
+                        <div class="time-label emergency-text">Seconds</div>
                     </div>
-                </div>
-                <div class="countdown-progress">
-                    <div class="progress-bar" id="progressBar"></div>
                 </div>
             </div>
         </div>
 
         <!-- Interactive Controls -->
         <div class="interactive-controls">
-            <button class="action-btn" onclick="triggerFireworks()">
+            <button class="action-btn emergency-text" onclick="triggerFireworks()">
                 <i class="fas fa-fire"></i>
                 <span>Fireworks</span>
             </button>
-            <button class="action-btn" onclick="toggleSnow()">
+            <button class="action-btn emergency-text" id="snowToggle" onclick="toggleSnow()">
                 <i class="fas fa-snowflake"></i>
-                <span>Snow Effect</span>
+                <span id="snowText">Snow On</span>
             </button>
-            <button class="action-btn" onclick="shareGreeting()">
+            <button class="action-btn emergency-text" onclick="shareGreeting()">
                 <i class="fas fa-share-alt"></i>
                 <span>Share Magic</span>
             </button>
-            <button class="action-btn" onclick="resetExperience()">
+            <button class="action-btn emergency-text" onclick="resetExperience()">
                 <i class="fas fa-redo"></i>
                 <span>Start Over</span>
             </button>
@@ -238,20 +212,17 @@
 
         <!-- Creator Credit -->
         <div class="creator-credit">
-            <div class="credit-glow"></div>
-            <div class="credit-content">
+            <div class="credit-content emergency-text">
                 <i class="fas fa-code"></i>
                 <span>Created with <i class="fas fa-heart pulse"></i> by</span>
-                <span class="creator-name">CohTek Martinez</span>
+                <span class="creator-name emergency-title">CohTek Martinez</span>
                 <i class="fas fa-code"></i>
             </div>
-            <div class="credit-year">✨ 2025 Holiday Season ✨</div>
+            <div class="credit-year emergency-text">✨ 2025 Holiday Season ✨</div>
         </div>
     </div>
 
-    <!-- Particle Effects -->
-    <div class="particles-container" id="particles"></div>
-    <div class="fireworks-container" id="fireworks"></div>
+    <!-- Canvas for Snow -->
     <canvas id="snowCanvas"></canvas>
 
     <!-- Audio Elements -->
@@ -259,13 +230,55 @@
     <audio id="magicSound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkle-sound-309.mp3" preload="auto"></audio>
 
     <script src="script.js"></script>
-
-    <!-- Add this div to wrap canvas for better mobile control -->
-<div class="canvas-container">
-    <canvas id="snowCanvas"></canvas>
-</div>
-
-<!-- Add this div for better mobile spacing -->
-<div class="mobile-spacer"></div>
+    
+    <!-- Emergency JavaScript to keep text visible -->
+    <script>
+        // Force all text to be visible at all times
+        function forceTextVisibility() {
+            // Add emergency classes to all text elements
+            const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, div, button, label');
+            textElements.forEach(el => {
+                if (el.textContent && el.textContent.trim() !== '') {
+                    if (!el.classList.contains('emergency-text') && !el.classList.contains('emergency-title')) {
+                        if (el.classList.contains('main-title') || el.classList.contains('greeting-title') || 
+                            el.classList.contains('name-text') || el.classList.contains('time-value') ||
+                            el.classList.contains('creator-name')) {
+                            el.classList.add('emergency-title');
+                        } else {
+                            el.classList.add('emergency-text');
+                        }
+                    }
+                }
+            });
+            
+            // Force inline styles as backup
+            const emergencyTitles = document.querySelectorAll('.emergency-title');
+            emergencyTitles.forEach(el => {
+                el.style.color = '#FFD700 !important';
+                el.style.textShadow = '2px 2px 4px #000000, 0 0 10px rgba(255, 215, 0, 0.7) !important';
+                el.style.webkitTextFillColor = '#FFD700 !important';
+            });
+            
+            const emergencyTexts = document.querySelectorAll('.emergency-text');
+            emergencyTexts.forEach(el => {
+                el.style.color = '#FFFFFF !important';
+                el.style.textShadow = '1px 1px 3px #000000 !important';
+                el.style.webkitTextFillColor = '#FFFFFF !important';
+            });
+        }
+        
+        // Run on load and every second
+        document.addEventListener('DOMContentLoaded', forceTextVisibility);
+        setInterval(forceTextVisibility, 1000);
+        
+        // Also run when animations might affect text
+        const observer = new MutationObserver(forceTextVisibility);
+        observer.observe(document.body, { 
+            childList: true, 
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['style', 'class']
+        });
+    </script>
 </body>
 </html>
