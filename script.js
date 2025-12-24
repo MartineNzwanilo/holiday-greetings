@@ -1,5 +1,4 @@
-
-// Enhanced Holiday Greetings Experience
+// Holiday Magic Application
 class HolidayMagic {
     constructor() {
         this.state = {
@@ -9,8 +8,7 @@ class HolidayMagic {
             isSnowActive: true,
             autoSlideInterval: null,
             countdownInterval: null,
-            slideCountdown: 7,
-            particles: [],
+            slideCountdown: 10,
             snowflakes: [],
             snowCtx: null,
             lastFrameTime: 0,
@@ -22,22 +20,12 @@ class HolidayMagic {
     
     initialize() {
         this.cacheElements();
-        
-        if (!this.elements.userNameInput) {
-            console.error('Required elements not found');
-            return;
-        }
-        
         this.setupEventListeners();
-        this.createParticles();
         this.initSnowCanvas();
-        this.startAutoThemeCycle();
         this.startCountdown();
         this.startMessageAutoSlide();
-        this.animateTitle();
         this.animateTypingText();
-        
-        // Start animation loop
+        this.forceTextVisibility(); // Emergency text fix
         requestAnimationFrame((timestamp) => this.animationLoop(timestamp));
     }
     
@@ -57,10 +45,8 @@ class HolidayMagic {
             hours: document.getElementById('hours'),
             minutes: document.getElementById('minutes'),
             seconds: document.getElementById('seconds'),
-            progressBar: document.getElementById('progressBar'),
             snowCanvas: document.getElementById('snowCanvas'),
-            particlesContainer: document.getElementById('particles'),
-            fireworksContainer: document.getElementById('fireworks')
+            snowText: document.getElementById('snowText')
         };
     }
     
@@ -73,10 +59,6 @@ class HolidayMagic {
             this.elements.userNameInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') this.startGreeting();
             });
-            
-            this.elements.userNameInput.addEventListener('input', (e) => {
-                this.animateInput(e.target.value);
-            });
         }
     }
     
@@ -87,11 +69,14 @@ class HolidayMagic {
         const ctx = canvas.getContext('2d');
         this.state.snowCtx = ctx;
         
+        // Set canvas size
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
+        // Create snowflakes
         this.createSnowflakes();
         
+        // Handle window resize
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -104,18 +89,18 @@ class HolidayMagic {
         const canvas = this.elements.snowCanvas;
         if (!canvas) return;
         
-        const flakeCount = Math.min(100, Math.floor(canvas.width * canvas.height / 10000));
+        const flakeCount = Math.min(80, Math.floor(canvas.width * canvas.height / 15000));
         
         for (let i = 0; i < flakeCount; i++) {
             this.state.snowflakes.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
                 radius: Math.random() * 3 + 1,
-                speed: Math.random() * 0.8 + 0.3,
-                wind: Math.random() * 0.3 - 0.15,
+                speed: Math.random() * 0.7 + 0.3,
+                wind: Math.random() * 0.2 - 0.1,
                 opacity: Math.random() * 0.4 + 0.3,
-                wobble: Math.random() * 0.5,
-                wobbleSpeed: Math.random() * 0.05 + 0.02
+                wobble: Math.random() * 0.3,
+                wobbleSpeed: Math.random() * 0.03 + 0.01
             });
         }
     }
@@ -126,12 +111,7 @@ class HolidayMagic {
         
         if (deltaTime > interval) {
             this.state.lastFrameTime = timestamp - (deltaTime % interval);
-            
-            // Update snow animation
             this.animateSnow();
-            
-            // Update particles
-            this.updateParticles();
         }
         
         requestAnimationFrame((ts) => this.animationLoop(ts));
@@ -150,7 +130,6 @@ class HolidayMagic {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         
         this.state.snowflakes.forEach(flake => {
-            // Add gentle wobble
             const wobbleX = Math.sin(Date.now() * flake.wobbleSpeed) * flake.wobble;
             
             ctx.beginPath();
@@ -169,54 +148,6 @@ class HolidayMagic {
             }
             if (flake.x > canvas.width + 10) flake.x = -10;
             if (flake.x < -10) flake.x = canvas.width + 10;
-        });
-    }
-    
-    createParticles() {
-        const container = this.elements.particlesContainer;
-        if (!container) return;
-        
-        // Clear existing particles
-        container.innerHTML = '';
-        this.state.particles = [];
-        
-        const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96e6a1'];
-        const particleCount = Math.min(80, Math.floor(window.innerWidth * window.innerHeight / 20000));
-        
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            const size = Math.random() * 4 + 1;
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            const duration = Math.random() * 15 + 10;
-            const delay = Math.random() * 5;
-            
-            particle.style.cssText = `
-                position: fixed;
-                width: ${size}px;
-                height: ${size}px;
-                background: ${color};
-                border-radius: 50%;
-                top: ${Math.random() * 100}vh;
-                left: ${Math.random() * 100}vw;
-                opacity: ${Math.random() * 0.3 + 0.2};
-                pointer-events: none;
-                z-index: 0;
-                animation: floatParticle ${duration}s linear infinite ${delay}s;
-            `;
-            
-            container.appendChild(particle);
-            this.state.particles.push({
-                element: particle,
-                speed: Math.random() * 0.5 + 0.2,
-                angle: Math.random() * Math.PI * 2
-            });
-        }
-    }
-    
-    updateParticles() {
-        this.state.particles.forEach(particle => {
-            // Simple CSS animation handles most of it
-            // We can add additional logic here if needed
         });
     }
     
@@ -329,7 +260,7 @@ class HolidayMagic {
             if (i < text.length) {
                 element.textContent += text.charAt(i);
                 i++;
-                setTimeout(typeWriter, 40); // Slower typing speed
+                setTimeout(typeWriter, 40);
             }
         };
         
@@ -355,7 +286,7 @@ class HolidayMagic {
         // Start auto-slide interval
         this.state.autoSlideInterval = setInterval(() => {
             this.nextMessage();
-        }, 10000); // 10 seconds between messages
+        }, 10000); // 10 seconds
     }
     
     startAutoSlideCountdown() {
@@ -387,15 +318,6 @@ class HolidayMagic {
         if (this.elements.countdownDisplay) {
             this.elements.countdownDisplay.textContent = '10';
         }
-        
-        // Reset the progress bar animation
-        const progressBar = this.elements.progressBar;
-        if (progressBar) {
-            progressBar.style.animation = 'none';
-            setTimeout(() => {
-                progressBar.style.animation = 'progressShrink 10s linear infinite';
-            }, 10);
-        }
     }
     
     startCountdown() {
@@ -419,7 +341,7 @@ class HolidayMagic {
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         
-        // Safely update elements
+        // Update elements
         this.safeUpdateElement('days', days.toString().padStart(2, '0'));
         this.safeUpdateElement('hours', hours.toString().padStart(2, '0'));
         this.safeUpdateElement('minutes', minutes.toString().padStart(2, '0'));
@@ -437,22 +359,6 @@ class HolidayMagic {
         }
     }
     
-    startAutoThemeCycle() {
-        const themes = [
-            { bg: 'linear-gradient(135deg, #0a0a2a, #1a1a4a, #2d0a3d, #0a2a2a, #2a0a2a)' },
-            { bg: 'linear-gradient(135deg, #1a0a2a, #4a1a4a, #3d0a2d, #2a0a1a, #2a2a0a)' },
-            { bg: 'linear-gradient(135deg, #0a2a2a, #1a4a4a, #0a3d2d, #2a2a0a, #2a0a0a)' },
-            { bg: 'linear-gradient(135deg, #2a0a0a, #4a1a1a, #3d0a0a, #2a2a1a, #0a2a2a)' }
-        ];
-        
-        let currentTheme = 0;
-        
-        setInterval(() => {
-            currentTheme = (currentTheme + 1) % themes.length;
-            document.body.style.background = themes[currentTheme].bg;
-        }, 20000); // 20 seconds between theme changes
-    }
-    
     triggerFireworks() {
         this.playSound('magicSound');
         
@@ -468,7 +374,7 @@ class HolidayMagic {
     
     createFirework(x, y) {
         const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
-        const particleCount = 30;
+        const particleCount = 25;
         
         for (let i = 0; i < particleCount; i++) {
             setTimeout(() => {
@@ -477,7 +383,6 @@ class HolidayMagic {
                 const velocity = Math.random() * 2 + 1;
                 const color = colors[Math.floor(Math.random() * colors.length)];
                 const size = Math.random() * 4 + 2;
-                const life = 1000;
                 
                 particle.style.cssText = `
                     position: fixed;
@@ -498,8 +403,8 @@ class HolidayMagic {
                 
                 // Animate particle
                 setTimeout(() => {
-                    const dx = Math.cos(angle) * velocity * 60;
-                    const dy = Math.sin(angle) * velocity * 60;
+                    const dx = Math.cos(angle) * velocity * 50;
+                    const dy = Math.sin(angle) * velocity * 50;
                     
                     particle.style.transform = `translate(${dx}px, ${dy}px)`;
                     particle.style.opacity = '0';
@@ -517,13 +422,30 @@ class HolidayMagic {
     
     toggleSnow() {
         this.state.isSnowActive = !this.state.isSnowActive;
-        const btn = document.querySelector('[onclick="toggleSnow()"]');
-        if (btn) {
-            const span = btn.querySelector('span');
-            if (span) {
-                span.textContent = this.state.isSnowActive ? 'Snow Off' : 'Snow On';
-            }
+        
+        // Update button text
+        if (this.elements.snowText) {
+            this.elements.snowText.textContent = this.state.isSnowActive ? 'Snow Off' : 'Snow On';
         }
+        
+        // Visual feedback
+        const btn = document.getElementById('snowToggle');
+        if (btn) {
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = '';
+            }, 200);
+        }
+        
+        // Play sound
+        this.playSound('clickSound');
+        
+        // Show notification
+        this.showNotification(
+            this.state.isSnowActive ? 
+            '❄️ Snow effect enabled!' : 
+            '✨ Snow effect disabled!'
+        );
     }
     
     shareGreeting() {
@@ -586,32 +508,16 @@ class HolidayMagic {
     triggerCelebration() {
         this.triggerFireworks();
         
-        // Animate orbit items
-        const orbitItems = document.querySelectorAll('.orbit-item');
-        orbitItems.forEach((item, index) => {
+        // Animate icons
+        const icons = document.querySelectorAll('.holiday-icons i');
+        icons.forEach((icon, index) => {
             setTimeout(() => {
-                item.style.transform += ' scale(1.5)';
+                icon.style.transform = 'scale(1.5)';
                 setTimeout(() => {
-                    item.style.transform = item.style.transform.replace(' scale(1.5)', '');
+                    icon.style.transform = '';
                 }, 300);
             }, index * 100);
         });
-    }
-    
-    animateTitle() {
-        const titleChars = document.querySelectorAll('.title-char');
-        setInterval(() => {
-            if (titleChars.length > 0) {
-                const randomChar = titleChars[Math.floor(Math.random() * titleChars.length)];
-                randomChar.style.transform = 'translateY(-10px)';
-                randomChar.style.color = '#ffd700';
-                
-                setTimeout(() => {
-                    randomChar.style.transform = 'translateY(0)';
-                    randomChar.style.color = '';
-                }, 500);
-            }
-        }, 3000);
     }
     
     animateTypingText() {
@@ -666,6 +572,38 @@ class HolidayMagic {
         setTimeout(type, 1000);
     }
     
+    forceTextVisibility() {
+        // Emergency text visibility fix
+        const allTextElements = document.querySelectorAll('body *');
+        allTextElements.forEach(el => {
+            if (el.textContent && el.textContent.trim() !== '') {
+                const style = window.getComputedStyle(el);
+                const color = style.color;
+                
+                // If text is black or transparent, force it to be visible
+                if (color === 'rgba(0, 0, 0, 0)' || color === 'rgb(0, 0, 0)' || 
+                    style.opacity === '0' || style.visibility === 'hidden') {
+                    
+                    if (el.classList.contains('main-title') || el.classList.contains('greeting-title') || 
+                        el.classList.contains('name-text') || el.classList.contains('time-value') ||
+                        el.classList.contains('creator-name')) {
+                        
+                        el.style.color = '#FFD700 !important';
+                        el.style.textShadow = '2px 2px 4px #000000, 0 0 10px rgba(255, 215, 0, 0.7) !important';
+                        el.style.webkitTextFillColor = '#FFD700 !important';
+                    } else {
+                        el.style.color = '#FFFFFF !important';
+                        el.style.textShadow = '1px 1px 3px #000000 !important';
+                        el.style.webkitTextFillColor = '#FFFFFF !important';
+                    }
+                    
+                    el.style.opacity = '1 !important';
+                    el.style.visibility = 'visible !important';
+                }
+            }
+        });
+    }
+    
     playSound(soundId) {
         try {
             const sound = document.getElementById(soundId);
@@ -690,6 +628,20 @@ class HolidayMagic {
         const notification = document.createElement('div');
         notification.className = 'custom-notification';
         notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #FF6B6B, #FFD700);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 2.7s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-weight: bold;
+            font-size: 0.9rem;
+        `;
         
         document.body.appendChild(notification);
         
@@ -701,26 +653,25 @@ class HolidayMagic {
     }
 }
 
-// Add CSS animations
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    // Create the HolidayMagic instance
+    const holidayMagic = new HolidayMagic();
+    
+    // Global functions for button onclick handlers
+    window.nextMessage = () => holidayMagic.nextMessage();
+    window.triggerFireworks = () => holidayMagic.triggerFireworks();
+    window.toggleSnow = () => holidayMagic.toggleSnow();
+    window.shareGreeting = () => holidayMagic.shareGreeting();
+    window.resetExperience = () => holidayMagic.resetExperience();
+    
+    // Make it globally available
+    window.holidayMagic = holidayMagic;
+});
+
+// Add missing CSS animations
 const style = document.createElement('style');
 style.textContent = `
-    @keyframes floatParticle {
-        0% {
-            transform: translate(0, 0) rotate(0deg);
-            opacity: 0;
-        }
-        10% {
-            opacity: 0.3;
-        }
-        90% {
-            opacity: 0.3;
-        }
-        100% {
-            transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(180deg);
-            opacity: 0;
-        }
-    }
-    
     @keyframes shake {
         0%, 100% { transform: translateX(0); }
         10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
@@ -765,24 +716,8 @@ style.textContent = `
         100% { transform: rotateX(0deg); }
     }
     
-    @keyframes progressShrink {
-        0% { transform: scaleX(1); }
-        100% { transform: scaleX(0); }
-    }
-    
-    .custom-notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(45deg, #ff6b6b, #ffd700);
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        z-index: 10000;
-        animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 2.7s;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        font-weight: bold;
-        font-size: 0.9rem;
+    .flip {
+        animation: flipAnimation 0.5s ease-out;
     }
     
     .greeting-section {
@@ -796,55 +731,3 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
-
-// Initialize when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    // Create the HolidayMagic instance
-    const holidayMagic = new HolidayMagic();
-    
-    // Global functions for button onclick handlers
-    window.nextMessage = () => holidayMagic.nextMessage();
-    window.triggerFireworks = () => holidayMagic.triggerFireworks();
-    window.toggleSnow = () => holidayMagic.toggleSnow();
-    window.shareGreeting = () => holidayMagic.shareGreeting();
-    window.resetExperience = () => holidayMagic.resetExperience();
-    
-    // Make it globally available
-    window.holidayMagic = holidayMagic;
-});
-
-// Add error handling for audio
-window.addEventListener('load', () => {
-    const audioElements = document.querySelectorAll('audio');
-    audioElements.forEach(audio => {
-        audio.volume = 0.2;
-    });
-});
-// Add this function to handle canvas resizing
-function initCanvas() {
-    const canvas = document.getElementById('snowCanvas');
-    if (!canvas) return;
-    
-    // Set canvas size based on viewport
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        // Reduce particle count on mobile
-        if (window.innerWidth < 768) {
-            holidayMagic.state.particleCount = 50;
-        } else {
-            holidayMagic.state.particleCount = 150;
-        }
-    }
-    
-    // Initial resize
-    resizeCanvas();
-    
-    // Resize on window change
-    window.addEventListener('resize', resizeCanvas);
-    window.addEventListener('orientationchange', resizeCanvas);
-}
-
-// Call this in your initialize function
-initCanvas();
