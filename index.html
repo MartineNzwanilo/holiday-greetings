@@ -64,6 +64,19 @@
             </div>
         </div>
 
+        <!-- Music Control Button -->
+        <div class="music-control-container">
+            <button class="music-control-btn" id="musicToggle">
+                <i class="fas fa-volume-up"></i>
+                <span id="musicText">Play Music</span>
+            </button>
+            <div class="volume-slider-container">
+                <i class="fas fa-volume-down"></i>
+                <input type="range" id="volumeSlider" min="0" max="100" value="50">
+                <i class="fas fa-volume-up"></i>
+            </div>
+        </div>
+
         <!-- Input Section (Visible by default) -->
         <div class="input-section" id="inputSection">
             <div class="input-glow-container">
@@ -162,9 +175,6 @@
                                     Here's hoping your Christmas is filled with wonderful surprises and happiness!
                                 </div>
                             </div>
-                            <div class="message-indicator">
-                                <span class="current-message">1</span> / <span class="total-messages">10</span>
-                            </div>
                         </div>
                     </div>
 
@@ -252,15 +262,12 @@
     <!-- Audio Elements -->
     <audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" preload="auto"></audio>
     <audio id="magicSound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkle-sound-309.mp3" preload="auto"></audio>
-    <!-- Audio Elements -->
-<audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" preload="auto"></audio>
-<audio id="magicSound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkle-sound-309.mp3" preload="auto"></audio>
-<audio id="transitionSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" preload="auto"></audio>
-<audio id="bellSound" src="https://assets.mixkit.co/sfx/preview/mixkit-christmas-bells-loop-298.mp3" preload="auto"></audio>
-<audio id="fireworkSound" src="https://assets.mixkit.co/sfx/preview/mixkit-fireworks-show-audio-1575.mp3" preload="auto"></audio>
-<audio id="backgroundMusic" src="https://assets.mixkit.co/music/preview/mixkit-christmas-is-here-765.mp3" preload="metadata" loop></audio>
-<audio id="snowSound" src="https://assets.mixkit.co/sfx/preview/mixkit-cold-wind-blowing-1485.mp3" preload="auto" loop></audio>
-<audio id="notificationSound" src="https://assets.mixkit.co/sfx/preview/mixkit-happy-bells-notification-937.mp3" preload="auto"></audio>
+    <audio id="transitionSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" preload="auto"></audio>
+    <audio id="bellSound" src="https://assets.mixkit.co/sfx/preview/mixkit-christmas-bells-loop-298.mp3" preload="auto"></audio>
+    <audio id="fireworkSound" src="https://assets.mixkit.co/sfx/preview/mixkit-fireworks-show-audio-1575.mp3" preload="auto"></audio>
+    <audio id="backgroundMusic" src="https://assets.mixkit.co/music/preview/mixkit-christmas-is-here-765.mp3" preload="metadata" loop></audio>
+    <audio id="snowSound" src="https://assets.mixkit.co/sfx/preview/mixkit-cold-wind-blowing-1485.mp3" preload="auto" loop></audio>
+    <audio id="notificationSound" src="https://assets.mixkit.co/sfx/preview/mixkit-happy-bells-notification-937.mp3" preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
