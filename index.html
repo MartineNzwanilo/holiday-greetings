@@ -3,152 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎄 Personalized Holiday Greetings 🎉</title>
+    <title>🎄 Magical Holiday Greetings 🎉</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Mountains+of+Christmas&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="theme-overlay"></div>
+    <!-- Background Elements -->
+    <div class="floating-ornaments"></div>
+    <div class="sparkle-overlay"></div>
+    <div class="aurora-effect"></div>
     
+    <!-- Main Container -->
     <div class="container">
-        <!-- Header with Auto-Changing Title -->
+        <!-- Animated Header -->
         <div class="header">
-            <h1 id="main-title">
-                <span class="title-part">🎄 Merry Christmas</span>
-                <span class="title-part">🎉 Happy New Year</span>
-            </h1>
-            <div class="subtitle" id="subtitle">Spread Joy & Happiness!</div>
+            <div class="title-wrapper">
+                <h1 class="main-title">
+                    <span class="title-char" style="--i:1">🎄</span>
+                    <span class="title-char" style="--i:2">M</span>
+                    <span class="title-char" style="--i:3">e</span>
+                    <span class="title-char" style="--i:4">r</span>
+                    <span class="title-char" style="--i:5">r</span>
+                    <span class="title-char" style="--i:6">y</span>
+                    <span class="title-char" style="--i:7"></span>
+                    <span class="title-char" style="--i:8">C</span>
+                    <span class="title-char" style="--i:9">h</span>
+                    <span class="title-char" style="--i:10">r</span>
+                    <span class="title-char" style="--i:11">i</span>
+                    <span class="title-char" style="--i:12">s</span>
+                    <span class="title-char" style="--i:13">t</span>
+                    <span class="title-char" style="--i:14">m</span>
+                    <span class="title-char" style="--i:15">a</span>
+                    <span class="title-char" style="--i:16">s</span>
+                    <span class="title-char" style="--i:17"></span>
+                    <span class="title-char" style="--i:18">&</span>
+                    <span class="title-char" style="--i:19"></span>
+                    <span class="title-char" style="--i:20">🎉</span>
+                    <span class="title-char" style="--i:21">H</span>
+                    <span class="title-char" style="--i:22">a</span>
+                    <span class="title-char" style="--i:23">p</span>
+                    <span class="title-char" style="--i:24">p</span>
+                    <span class="title-char" style="--i:25">y</span>
+                    <span class="title-char" style="--i:26"></span>
+                    <span class="title-char" style="--i:27">N</span>
+                    <span class="title-char" style="--i:28">e</span>
+                    <span class="title-char" style="--i:29">w</span>
+                    <span class="title-char" style="--i:30"></span>
+                    <span class="title-char" style="--i:31">Y</span>
+                    <span class="title-char" style="--i:32">e</span>
+                    <span class="title-char" style="--i:33">a</span>
+                    <span class="title-char" style="--i:34">r</span>
+                    <span class="title-char" style="--i:35">!</span>
+                </h1>
+            </div>
+            <div class="subtitle">
+                <i class="fas fa-star"></i>
+                <span class="typing-text" id="typingText">Your magical holiday experience awaits...</span>
+                <i class="fas fa-star"></i>
+            </div>
         </div>
 
-        <!-- Name Input Section -->
+        <!-- Name Input with Enhanced Animation -->
         <div class="input-section" id="inputSection">
-            <div class="input-container">
-                <div class="input-icon">
-                    <i class="fas fa-user"></i>
+            <div class="input-glow-container">
+                <div class="magic-circle">
+                    <i class="fas fa-magic"></i>
                 </div>
-                <input type="text" id="userName" placeholder="Enter your name..." autocomplete="off">
-                <button id="startBtn" onclick="startGreeting()">
-                    <i class="fas fa-gift"></i> Get Your Greeting
-                </button>
-            </div>
-            <div class="hint">
-                <i class="fas fa-lightbulb"></i> Your name will create a personalized experience!
-            </div>
-        </div>
-
-        <!-- Greeting Display Section -->
-        <div class="greeting-section" id="greetingSection" style="display: none;">
-            <!-- Animated Icons -->
-            <div class="animated-icons" id="animatedIcons">
-                <div class="icon-row">
-                    <i class="fas fa-tree" style="--i:1"></i>
-                    <i class="fas fa-star" style="--i:2"></i>
-                    <i class="fas fa-snowflake" style="--i:3"></i>
-                    <i class="fas fa-gift" style="--i:4"></i>
-                    <i class="fas fa-candy-cane" style="--i:5"></i>
-                </div>
-                <div class="icon-row">
-                    <i class="fas fa-bell" style="--i:6"></i>
-                    <i class="fas fa-hat-wizard" style="--i:7"></i>
-                    <i class="fas fa-fire" style="--i:8"></i>
-                    <i class="fas fa-glass-cheers" style="--i:9"></i>
-                    <i class="fas fa-heart" style="--i:10"></i>
-                </div>
-            </div>
-
-            <!-- Personalized Greeting -->
-            <div class="greeting-card">
-                <div class="greeting-header">
-                    <div class="greeting-icon">
-                        <i class="fas fa-quote-left"></i>
+                <div class="input-wrapper">
+                    <div class="input-label">
+                        <i class="fas fa-user-astronaut"></i>
+                        Enter Your Name
                     </div>
-                    <h2 id="greetingText">Loading your special message...</h2>
-                    <div class="greeting-icon">
-                        <i class="fas fa-quote-right"></i>
+                    <div class="input-group">
+                        <input type="text" id="userName" placeholder="Type your name here..." autocomplete="off">
+                        <div class="input-underline"></div>
                     </div>
-                </div>
-                
-                <div class="personal-greeting">
-                    <div class="name-display" id="nameDisplay">
-                        <span class="name-highlight">Friend</span>
-                        <div class="name-underline"></div>
-                    </div>
-                    <p class="message" id="messageContent">
-                        Your personalized message will appear here!
-                    </p>
-                </div>
-
-                <div class="message-info">
-                    <div class="counter">
-                        <i class="fas fa-sync-alt"></i>
-                        <span>Message <span id="messageCount">1</span>/10</span>
-                    </div>
-                    <button class="next-btn" onclick="changeMessage()">
-                        <i class="fas fa-forward"></i> Next Message
+                    <button id="startBtn" class="magic-btn">
+                        <span class="btn-text">Begin Magic</span>
+                        <div class="btn-sparkle">
+                            <i class="fas fa-sparkles"></i>
+                        </div>
+                        <div class="btn-glow"></div>
                     </button>
                 </div>
             </div>
+            <div class="input-hint">
+                <i class="fas fa-wand-magic-sparkles"></i>
+                Your name will unlock personalized holiday magic!
+            </div>
+        </div>
 
-            <!-- Countdown Timer -->
+        <!-- Greeting Display (Initially Hidden) -->
+        <div class="greeting-section" id="greetingSection" style="display: none;">
+            <!-- Floating Holiday Elements -->
+            <div class="holiday-orbit">
+                <div class="orbit-item" style="--angle:0deg"><i class="fas fa-tree"></i></div>
+                <div class="orbit-item" style="--angle:72deg"><i class="fas fa-star"></i></div>
+                <div class="orbit-item" style="--angle:144deg"><i class="fas fa-gift"></i></div>
+                <div class="orbit-item" style="--angle:216deg"><i class="fas fa-snowflake"></i></div>
+                <div class="orbit-item" style="--angle:288deg"><i class="fas fa-bell"></i></div>
+            </div>
+
+            <!-- Central Greeting Card -->
+            <div class="greeting-card-wrapper">
+                <div class="greeting-card">
+                    <div class="card-shine"></div>
+                    <div class="card-border-animation"></div>
+                    
+                    <div class="greeting-header">
+                        <div class="greeting-icon-left">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <div class="greeting-title" id="greetingTitle">
+                            Special Greetings
+                        </div>
+                        <div class="greeting-icon-right">
+                            <i class="fas fa-quote-right"></i>
+                        </div>
+                    </div>
+
+                    <div class="greeting-body">
+                        <div class="name-display-container">
+                            <div class="name-glow-effect"></div>
+                            <div class="name-display" id="nameDisplay">
+                                <span class="name-text">Friend</span>
+                                <div class="name-trail"></div>
+                            </div>
+                        </div>
+
+                        <div class="message-container">
+                            <div class="message-slider">
+                                <div class="message active" id="message1">
+                                    May your Christmas sparkle with moments of love, laughter, and goodwill!
+                                </div>
+                                <div class="message" id="message2">
+                                    Wishing you a season full of light and laughter for you and your family!
+                                </div>
+                                <div class="message" id="message3">
+                                    May the magic of Christmas fill every corner of your heart and home!
+                                </div>
+                                <div class="message" id="message4">
+                                    Here's to a Christmas that's merry and bright, and a New Year that's full of light!
+                                </div>
+                                <div class="message" id="message5">
+                                    May your holidays be wrapped in happiness and tied with love!
+                                </div>
+                                <div class="message" id="message6">
+                                    Sending you warm wishes for a joyful Christmas and a wonderful New Year!
+                                </div>
+                                <div class="message" id="message7">
+                                    May your Christmas be decorated with cheer and filled with love!
+                                </div>
+                                <div class="message" id="message8">
+                                    Wishing you peace, joy, and all the best this wonderful holiday!
+                                </div>
+                                <div class="message" id="message9">
+                                    May the spirit of Christmas bring you peace, the gladness of Christmas give you hope!
+                                </div>
+                                <div class="message" id="message10">
+                                    Here's hoping your Christmas is filled with wonderful surprises and happiness!
+                                </div>
+                            </div>
+                            <div class="message-indicator">
+                                <span class="current-message">1</span> / <span class="total-messages">10</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="greeting-footer">
+                        <div class="auto-slide-indicator">
+                            <i class="fas fa-sync-alt spin"></i>
+                            Auto-changing in <span id="countdown">7</span>s
+                        </div>
+                        <button class="control-btn next-btn" onclick="nextMessage()">
+                            <i class="fas fa-forward"></i> Next Message
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Countdown Section -->
             <div class="countdown-section">
-                <h3><i class="fas fa-hourglass-half"></i> Time to New Year 2025</h3>
-                <div class="countdown-timer">
-                    <div class="time-unit">
-                        <div class="time-value" id="days">00</div>
+                <div class="countdown-title">
+                    <i class="fas fa-hourglass-end"></i>
+                    <span>Countdown to New Year 2025</span>
+                    <i class="fas fa-hourglass-end"></i>
+                </div>
+                <div class="countdown-display">
+                    <div class="time-block">
+                        <div class="time-value flip" id="days">00</div>
                         <div class="time-label">Days</div>
                     </div>
                     <div class="time-separator">:</div>
-                    <div class="time-unit">
-                        <div class="time-value" id="hours">00</div>
+                    <div class="time-block">
+                        <div class="time-value flip" id="hours">00</div>
                         <div class="time-label">Hours</div>
                     </div>
                     <div class="time-separator">:</div>
-                    <div class="time-unit">
-                        <div class="time-value" id="minutes">00</div>
+                    <div class="time-block">
+                        <div class="time-value flip" id="minutes">00</div>
                         <div class="time-label">Minutes</div>
                     </div>
                     <div class="time-separator">:</div>
-                    <div class="time-unit">
-                        <div class="time-value" id="seconds">00</div>
+                    <div class="time-block">
+                        <div class="time-value flip" id="seconds">00</div>
                         <div class="time-label">Seconds</div>
                     </div>
+                </div>
+                <div class="countdown-progress">
+                    <div class="progress-bar" id="progressBar"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Controls -->
-        <div class="controls">
-            <button class="control-btn" onclick="resetGreeting()">
-                <i class="fas fa-redo"></i> Reset
+        <!-- Interactive Controls -->
+        <div class="interactive-controls">
+            <button class="action-btn" onclick="triggerFireworks()">
+                <i class="fas fa-fire"></i>
+                <span>Fireworks</span>
             </button>
-            <button class="control-btn" onclick="shareGreeting()">
-                <i class="fas fa-share-alt"></i> Share
-            </button>
-            <button class="control-btn" id="themeToggle">
-                <i class="fas fa-palette"></i> Themes: <span id="themeMode">Auto</span>
-            </button>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <p>Made with <i class="fas fa-heart heart-beat"></i> for the Holiday Season</p>
-            <div class="footer-icons">
-                <i class="fas fa-tree"></i>
-                <i class="fas fa-star"></i>
+            <button class="action-btn" onclick="toggleSnow()">
                 <i class="fas fa-snowflake"></i>
-                <i class="fas fa-gift"></i>
-                <i class="fas fa-bell"></i>
+                <span>Snow Effect</span>
+            </button>
+            <button class="action-btn" onclick="shareGreeting()">
+                <i class="fas fa-share-alt"></i>
+                <span>Share Magic</span>
+            </button>
+            <button class="action-btn" onclick="resetExperience()">
+                <i class="fas fa-redo"></i>
+                <span>Start Over</span>
+            </button>
+        </div>
+
+        <!-- Creator Credit -->
+        <div class="creator-credit">
+            <div class="credit-glow"></div>
+            <div class="credit-content">
+                <i class="fas fa-code"></i>
+                <span>Created with <i class="fas fa-heart pulse"></i> by</span>
+                <span class="creator-name">CohTek under Martinez</span>
+                <i class="fas fa-code"></i>
             </div>
+            <div class="credit-year">✨ 2024 Holiday Season ✨</div>
         </div>
     </div>
 
-    <!-- Snowflakes Container -->
-    <div class="snowflakes" aria-hidden="true">
-        <!-- Snowflakes will be generated by JavaScript -->
-    </div>
+    <!-- Particle Effects -->
+    <div class="particles-container" id="particles"></div>
+    <div class="fireworks-container" id="fireworks"></div>
+    <canvas id="snowCanvas"></canvas>
 
-    <!-- Confetti Container -->
-    <div class="confetti-container"></div>
+    <!-- Audio Elements -->
+    <audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" preload="auto"></audio>
+    <audio id="magicSound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkle-sound-309.mp3" preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
