@@ -1,3 +1,4 @@
+
 // Holiday Magic Application with Music Control
 class HolidayMagic {
     constructor() {
@@ -16,7 +17,6 @@ class HolidayMagic {
             frameRate: 60
         };
         
-        this.audioManager = null;
         this.initialize();
     }
     
@@ -39,6 +39,9 @@ class HolidayMagic {
         if (this.elements.inputSection) {
             this.elements.inputSection.style.display = 'block';
         }
+        
+        // Initialize volume from slider
+        this.updateVolume();
     }
     
     cacheElements() {
@@ -50,8 +53,6 @@ class HolidayMagic {
             nameDisplay: document.getElementById('nameDisplay'),
             greetingTitle: document.getElementById('greetingTitle'),
             typingText: document.getElementById('typingText'),
-            currentMessage: document.querySelector('.current-message'),
-            totalMessages: document.querySelector('.total-messages'),
             countdownDisplay: document.getElementById('countdown'),
             days: document.getElementById('days'),
             hours: document.getElementById('hours'),
@@ -87,100 +88,211 @@ class HolidayMagic {
         if (this.elements.volumeSlider) {
             this.elements.volumeSlider.addEventListener('input', () => this.updateVolume());
         }
+        
+        // Auto-start music on first user interaction
+        document.addEventListener('click', () => this.handleFirstInteraction(), { once: true });
+        document.addEventListener('keydown', () => this.handleFirstInteraction(), { once: true });
     }
     
     initAudioManager() {
-        this.audioManager = {
+        // Get audio elements
+        this.audio = {
             backgroundMusic: document.getElementById('backgroundMusic'),
-            snowAudio: document.getElementById('snowSound'),
+            clickSound: document.getElementById('clickSound'),
+            magicSound: document.getElementById('magicSound'),
+            transitionSound: document.getElementById('transitionSound'),
+            bellSound: document.getElementById('bellSound'),
+            fireworkSound: document.getElementById('fireworkSound'),
+            snowSound: document.getElementById('snowSound'),
+            notificationSound: document.getElementById('notificationSound')
+        };
+        
+        // Set initial volume
+        this.updateVolume();
+    }
+    
+    handleFirstInteraction() {
+        // This method helps with autoplay policies
+        // Try to resume audio context if needed
+        if (this.audio.backgroundMusic) {
+            this.audio.backgroundMusic.load(); // Preload audio
+        }
+    }
+    
+    playSound(soundId, options = {}) {
+        try {
+            const sound = document.getElementById(soundId);
+            if (!sound) {
+                console.warn(`Sound element "${soundId}" not found`);
+                return null;
+            }
             
-            playSound(soundId, options = {}) {
-                try {
-                    const sound = document.getElementById(soundId);
-                    if (!sound) return null;
-                    
-                    const {
-                        volume = 0.5,
-                        resetTime = true,
-                        allowOverlap = false,
-                        loop = false
-                    } = options;
-                    
-                    if (!allowOverlap && !sound.paused && !sound.ended) {
-                        return null;
-                    }
-                    
-                    const soundToPlay = allowOverlap ? sound.cloneNode() : sound;
-                    
-                    if (resetTime) soundToPlay.currentTime = 0;
-                    soundToPlay.volume = volume;
-                    soundToPlay.loop = loop;
-                    
-                    soundToPlay.play().catch(e => {
-                        if (e.name === 'NotAllowedError') {
-                            console.log('Audio play blocked');
-                        }
-                    });
-                    
-                    return soundToPlay;
-                } catch (e) {
-                    console.error('Error playing sound:', e);
-                    return null;
-                }
-            },
+            const {
+                volume = 0.5,
+                resetTime = true,
+                allowOverlap = false,
+                loop = false
+            } = options;
             
-            playClick() {
-                return this.playSound('clickSound', { volume: 0.3 });
-            },
+            // Get volume from slider
+            const sliderVolume = this.elements.volumeSlider ? this.elements.volumeSlider.value / 100 : 0.5;
+            const finalVolume = Math.min(volume, sliderVolume);
             
-            playMagic() {
-                return this.playSound('magicSound', { volume: 0.4 });
-            },
+            // Don't play if already playing and overlap not allowed
+            if (!allowOverlap && !sound.paused && !sound.ended) {
+                return null;
+            }
             
-            playTransition() {
-                return this.playSound('transitionSound', { volume: 0.5 });
-            },
+            // Clone for overlapping if needed
+            const soundToPlay = allowOverlap ? sound.cloneNode() : sound;
             
-            playBell() {
-                return this.playSound('bellSound', { volume: 0.4 });
-            },
+            if (resetTime) {
+                soundToPlay.currentTime = 0;
+            }
             
-            playFirework() {
-                return this.playSound('fireworkSound', { volume: 0.6, allowOverlap: true });
-            },
+            soundToPlay.volume = finalVolume;
+            soundToPlay.loop = loop;
             
-            playNotification() {
-                return this.playSound('notificationSound', { volume: 0.5 });
-            },
+            const playPromise = soundToPlay.play();
             
-            toggleSnowSound(play) {
-                if (!this.snowAudio) return;
-                
-                if (play) {
-                    this.snowAudio.currentTime = 0;
-                    this.snowAudio.play().catch(() => {});
-                } else {
-                    this.snowAudio.pause();
-                }
-            },
-            
-            stopAllSounds() {
-                const allAudio = document.querySelectorAll('audio');
-                allAudio.forEach(audio => {
-                    if (audio !== this.backgroundMusic) {
-                        audio.pause();
-                        audio.currentTime = 0;
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    // Handle autoplay restrictions
+                    if (error.name === 'NotAllowedError') {
+                        console.log('Audio play was blocked by browser policy');
                     }
                 });
             }
-        };
+            
+            return soundToPlay;
+        } catch (e) {
+            console.error('Error playing sound:', e);
+            return null;
+        }
+    }
+    
+    playClick() {
+        return this.playSound('clickSound', { volume: 0.3 });
+    }
+    
+    playMagic() {
+        return this.playSound('magicSound', { volume: 0.4 });
+    }
+    
+    playTransition() {
+        return this.playSound('transitionSound', { volume: 0.5 });
+    }
+    
+    playBell() {
+        return this.playSound('bellSound', { volume: 0.4 });
+    }
+    
+    playFirework() {
+        return this.playSound('fireworkSound', { volume: 0.6, allowOverlap: true });
+    }
+    
+    playNotification() {
+        return this.playSound('notificationSound', { volume: 0.5 });
+    }
+    
+    toggleSnowSound(play) {
+        if (!this.audio.snowSound) return;
         
-        // Set initial volume from slider
-        if (this.elements.volumeSlider && this.audioManager.backgroundMusic) {
-            const initialVolume = this.elements.volumeSlider.value / 100;
-            this.audioManager.backgroundMusic.volume = initialVolume;
-            if (this.audioManager.snowAudio) {
-                this.audioManager.snowAudio.volume = Math.min(0.2, initialVolume);
+        if (play) {
+            this.audio.snowSound.currentTime = 0;
+            const volume = this.elements.volumeSlider ? this.elements.volumeSlider.value / 100 : 0.1;
+            this.audio.snowSound.volume = Math.min(0.2, volume);
+            this.audio.snowSound.play().catch(e => {
+                console.log('Snow sound play was blocked');
+            });
+        } else {
+            this.audio.snowSound.pause();
+        }
+    }
+    
+    toggleMusic() {
+        if (!this.audio.backgroundMusic) {
+            console.error('Background music element not found');
+            return;
+        }
+        
+        this.playClick();
+        
+        if (this.audio.backgroundMusic.paused) {
+            // Start playing
+            const playPromise = this.audio.backgroundMusic.play();
+            
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        this.state.isMusicPlaying = true;
+                        this.updateMusicButton(true);
+                        console.log('Music started successfully');
+                    })
+                    .catch(error => {
+                        console.error('Error playing music:', error);
+                        this.updateMusicButton(false);
+                        
+                        // Show user-friendly notification
+                        if (error.name === 'NotAllowedError') {
+                            this.showNotification('Click the Play Music button again to start music');
+                        }
+                    });
+            }
+        } else {
+            // Pause playing
+            this.audio.backgroundMusic.pause();
+            this.state.isMusicPlaying = false;
+            this.updateMusicButton(false);
+        }
+    }
+    
+    updateMusicButton(isPlaying) {
+        if (!this.elements.musicText || !this.elements.musicToggle) return;
+        
+        const icon = this.elements.musicToggle.querySelector('i');
+        if (!icon) return;
+        
+        if (isPlaying) {
+            this.elements.musicText.textContent = 'Pause Music';
+            icon.className = 'fas fa-volume-mute';
+            this.elements.musicToggle.style.background = 'linear-gradient(135deg, #4ecdc4 0%, #45b7d1 100%)';
+        } else {
+            this.elements.musicText.textContent = 'Play Music';
+            icon.className = 'fas fa-volume-up';
+            this.elements.musicToggle.style.background = 'linear-gradient(135deg, rgba(157, 78, 221, 0.8) 0%, rgba(69, 183, 209, 0.8) 100%)';
+        }
+    }
+    
+    updateVolume() {
+        if (!this.elements.volumeSlider) return;
+        
+        const volume = this.elements.volumeSlider.value / 100;
+        
+        // Update all audio elements
+        Object.values(this.audio).forEach(audioElement => {
+            if (audioElement) {
+                // Special handling for snow sound (keep it quieter)
+                if (audioElement.id === 'snowSound') {
+                    audioElement.volume = Math.min(0.2, volume);
+                } else {
+                    audioElement.volume = volume;
+                }
+            }
+        });
+        
+        // Update volume icon based on level
+        const volumeIcons = document.querySelectorAll('.volume-slider-container i');
+        if (volumeIcons.length >= 2) {
+            if (volume === 0) {
+                volumeIcons[0].className = 'fas fa-volume-mute';
+                volumeIcons[1].className = 'fas fa-volume-mute';
+            } else if (volume < 0.5) {
+                volumeIcons[0].className = 'fas fa-volume-down';
+                volumeIcons[1].className = 'fas fa-volume-up';
+            } else {
+                volumeIcons[0].className = 'fas fa-volume-up';
+                volumeIcons[1].className = 'fas fa-volume-up';
             }
         }
     }
@@ -268,47 +380,6 @@ class HolidayMagic {
         });
     }
     
-    toggleMusic() {
-        if (!this.audioManager || !this.audioManager.backgroundMusic) return;
-        
-        if (this.audioManager.backgroundMusic.paused) {
-            this.audioManager.backgroundMusic.play()
-                .then(() => {
-                    this.state.isMusicPlaying = true;
-                    this.elements.musicText.textContent = 'Pause Music';
-                    this.elements.musicToggle.querySelector('i').className = 'fas fa-volume-mute';
-                    this.audioManager.playClick();
-                })
-                .catch(error => {
-                    console.log('Music play blocked:', error);
-                    this.elements.musicText.textContent = 'Play Music';
-                    this.elements.musicToggle.querySelector('i').className = 'fas fa-volume-up';
-                });
-        } else {
-            this.audioManager.backgroundMusic.pause();
-            this.state.isMusicPlaying = false;
-            this.elements.musicText.textContent = 'Play Music';
-            this.elements.musicToggle.querySelector('i').className = 'fas fa-volume-up';
-            this.audioManager.playClick();
-        }
-    }
-    
-    updateVolume() {
-        if (!this.elements.volumeSlider || !this.audioManager) return;
-        
-        const volume = this.elements.volumeSlider.value / 100;
-        
-        // Update all audio elements
-        const allAudio = document.querySelectorAll('audio');
-        allAudio.forEach(audio => {
-            if (audio.id === 'snowSound') {
-                audio.volume = Math.min(0.2, volume);
-            } else {
-                audio.volume = volume;
-            }
-        });
-    }
-    
     startGreeting() {
         const name = this.elements.userNameInput?.value.trim();
         
@@ -318,7 +389,7 @@ class HolidayMagic {
         }
         
         this.state.userName = name;
-        this.audioManager.playMagic();
+        this.playMagic();
         
         if (this.elements.inputSection) {
             this.elements.inputSection.style.opacity = '0';
@@ -337,6 +408,11 @@ class HolidayMagic {
                 
                 this.updateGreeting();
                 this.triggerCelebration();
+                
+                // Try to start music automatically when greeting starts
+                if (!this.state.isMusicPlaying && this.audio.backgroundMusic) {
+                    setTimeout(() => this.toggleMusic(), 500);
+                }
             }, 500);
         }
     }
@@ -362,10 +438,6 @@ class HolidayMagic {
         }
         
         this.showMessage(this.state.currentMessage);
-        
-        if (this.elements.currentMessage) {
-            this.elements.currentMessage.textContent = this.state.currentMessage + 1;
-        }
     }
     
     showMessage(index) {
@@ -408,7 +480,8 @@ class HolidayMagic {
         this.state.currentMessage = (this.state.currentMessage + 1) % this.state.totalMessages;
         this.updateGreeting();
         this.resetAutoSlide();
-        this.audioManager.playClick();
+        this.playClick();
+        this.playBell();
     }
     
     startMessageAutoSlide() {
@@ -489,7 +562,7 @@ class HolidayMagic {
     }
     
     triggerFireworks() {
-        this.audioManager.playFirework();
+        this.playFirework();
         
         for (let i = 0; i < 3; i++) {
             setTimeout(() => {
@@ -554,9 +627,7 @@ class HolidayMagic {
             this.elements.snowText.textContent = this.state.isSnowActive ? 'Snow Off' : 'Snow On';
         }
         
-        if (this.audioManager) {
-            this.audioManager.toggleSnowSound(this.state.isSnowActive);
-        }
+        this.toggleSnowSound(this.state.isSnowActive);
         
         const btn = document.getElementById('snowToggle');
         if (btn) {
@@ -566,7 +637,7 @@ class HolidayMagic {
             }, 200);
         }
         
-        this.audioManager.playClick();
+        this.playClick();
         this.showNotification(
             this.state.isSnowActive ? 
             '❄️ Snow effect enabled!' : 
@@ -588,6 +659,7 @@ class HolidayMagic {
         } else {
             navigator.clipboard.writeText(text).then(() => {
                 this.showNotification('✨ Magical greeting copied! Share the joy! ✨');
+                this.playNotification();
             });
         }
     }
@@ -628,7 +700,7 @@ class HolidayMagic {
         }
         
         this.resetAutoSlide();
-        this.audioManager.playClick();
+        this.playClick();
     }
     
     shakeInput() {
@@ -638,10 +710,12 @@ class HolidayMagic {
                 this.elements.userNameInput.style.animation = '';
             }, 500);
         }
+        this.playClick();
     }
     
     triggerCelebration() {
         this.triggerFireworks();
+        this.playNotification();
         
         const icons = document.querySelectorAll('.holiday-icons i');
         icons.forEach((icon, index) => {
