@@ -43,7 +43,7 @@ body {
 }
 
 /* ============================================
-   CANVAS FIXES - MOBILE FIRST
+   CANVAS FIXES
    ============================================ */
 #snowCanvas {
     position: fixed;
@@ -56,92 +56,8 @@ body {
     display: block;
 }
 
-/* Canvas container to prevent overflow */
-.canvas-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 0;
-}
-
 /* ============================================
-   BACKGROUND EFFECTS (Optimized for Mobile)
-   ============================================ */
-.aurora-effect {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: 
-        radial-gradient(circle at 20% 30%, rgba(255, 0, 150, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(0, 204, 255, 0.08) 0%, transparent 40%);
-    pointer-events: none;
-    z-index: 0;
-    animation: auroraFloat 30s ease-in-out infinite alternate;
-}
-
-@keyframes auroraFloat {
-    0% { 
-        transform: translateY(0) rotate(0deg);
-        filter: hue-rotate(0deg);
-    }
-    100% { 
-        transform: translateY(-20px) rotate(1deg);
-        filter: hue-rotate(45deg);
-    }
-}
-
-.sparkle-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-image: 
-        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.05) 1px, transparent 2px),
-        radial-gradient(circle at 90% 40%, rgba(255, 255, 255, 0.04) 1px, transparent 3px);
-    background-size: 200px 200px, 300px 300px;
-    pointer-events: none;
-    z-index: 0;
-    animation: sparkleTwinkle 10s ease-in-out infinite;
-    opacity: 0.3;
-}
-
-@keyframes sparkleTwinkle {
-    0%, 100% { opacity: 0.2; }
-    50% { opacity: 0.4; }
-}
-
-.floating-ornaments {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 0;
-    display: none; /* Hidden on mobile to reduce clutter */
-}
-
-/* ============================================
-   MAIN CONTAINER (Fixed for Mobile)
-   ============================================ */
-.container {
-    max-width: 100%;
-    width: 100%;
-    padding: 15px;
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-/* ============================================
-   HEADER - MOBILE OPTIMIZED
+   HEADER - FIXED TEXT COLOR & LAYOUT
    ============================================ */
 .header {
     text-align: center;
@@ -154,6 +70,10 @@ body {
     position: relative;
     overflow: hidden;
     width: 100%;
+    min-height: 160px; /* Fixed height to prevent jumping */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .header::before {
@@ -178,39 +98,52 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* FIXED: Title wrapper to control layout */
 .title-wrapper {
     display: block;
     width: 100%;
-    padding: 0 5px;
+    padding: 0;
+    margin: 0;
 }
 
+/* FIXED: Main title - CHANGED FROM BLACK TO VISIBLE */
 .main-title {
     font-family: 'Mountains of Christmas', cursive;
-    font-size: 2rem;
+    font-size: 2.2rem; /* Slightly larger for mobile */
     background: linear-gradient(
         45deg,
         var(--primary-gold) 0%,
+        #ff8c00 25%, /* Orange for better contrast */
         var(--secondary-red) 50%,
+        #ff1493 75%, /* Deep pink */
         var(--accent-teal) 100%
     );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important; /* This makes it visible */
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* Changed: prevents vertical stacking */
     justify-content: center;
-    gap: 2px;
-    line-height: 1.2;
+    align-items: center;
+    line-height: 1.1;
     margin: 0 auto;
     text-align: center;
-    max-width: 100%;
-    word-break: break-word;
+    width: 100%;
+    overflow: hidden;
+    height: auto;
+    min-height: 60px; /* Fixed height */
 }
 
+/* FIXED: Title character styles */
 .title-char {
     display: inline-block;
     animation: titleCharFloat 4s ease-in-out infinite;
-    animation-delay: calc(var(--i) * 0.05s);
+    animation-delay: calc(var(--i) * 0.03s);
+    white-space: nowrap; /* Prevents line breaks */
+}
+
+.title-char.emoji {
+    font-size: 1.3em; /* Make emojis slightly larger */
 }
 
 @keyframes titleCharFloat {
@@ -222,6 +155,7 @@ body {
     }
 }
 
+/* Subtitle styles */
 .subtitle {
     margin-top: 15px;
     font-size: 1rem;
@@ -236,7 +170,7 @@ body {
 
 .typing-text {
     font-family: 'Dancing Script', cursive;
-    color: var(--primary-gold);
+    color: var(--primary-gold) !important; /* Force gold color */
     min-height: 24px;
     position: relative;
     display: inline-block;
@@ -248,6 +182,7 @@ body {
     content: '|';
     animation: cursorBlink 1s infinite;
     margin-left: 2px;
+    color: var(--primary-gold);
 }
 
 @keyframes cursorBlink {
@@ -256,7 +191,7 @@ body {
 }
 
 /* ============================================
-   INPUT SECTION - MOBILE FRIENDLY
+   INPUT SECTION
    ============================================ */
 .input-section {
     margin: 20px auto 30px;
@@ -356,24 +291,6 @@ body {
         0 6px 20px rgba(255, 215, 0, 0.15);
 }
 
-.input-underline {
-    position: absolute;
-    bottom: -2px;
-    left: 50%;
-    transform: translateX(-50%) scaleX(0);
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, 
-        transparent, 
-        var(--primary-gold), 
-        transparent);
-    transition: transform 0.3s ease;
-}
-
-#userName:focus + .input-underline {
-    transform: translateX(-50%) scaleX(1);
-}
-
 .magic-btn {
     position: relative;
     width: 100%;
@@ -384,7 +301,7 @@ body {
         var(--primary-gold) 100%);
     border: none;
     border-radius: 14px;
-    color: white;
+    color: white !important; /* Force white text */
     cursor: pointer;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -411,12 +328,14 @@ body {
 .btn-text {
     position: relative;
     z-index: 2;
+    color: white !important;
 }
 
 .btn-sparkle {
     position: relative;
     z-index: 2;
     animation: sparkleRotate 4s linear infinite;
+    color: white;
 }
 
 @keyframes sparkleRotate {
@@ -459,7 +378,7 @@ body {
 }
 
 /* ============================================
-   GREETING SECTION - MOBILE OPTIMIZED
+   GREETING SECTION
    ============================================ */
 .greeting-section {
     opacity: 0;
@@ -477,887 +396,264 @@ body {
     flex-direction: column;
 }
 
-.holiday-orbit {
-    position: relative;
-    width: 180px;
-    height: 180px;
-    margin: 20px auto 30px;
-    display: none; /* Hidden on mobile to save space */
+/* ============================================
+   SNOW TOGGLE FIXES
+   ============================================ */
+/* FIXED: Snow toggle button styles */
+.action-btn[onclick="toggleSnow()"] {
+    color: white !important;
+}
+
+.action-btn[onclick="toggleSnow()"] i {
+    color: white !important;
+}
+
+.action-btn[onclick="toggleSnow()"] span {
+    color: white !important;
 }
 
 /* ============================================
-   GREETING CARD - COMPACT FOR MOBILE
+   MOBILE-SPECIFIC FIXES FOR TEXT LAYOUT
    ============================================ */
-.greeting-card-wrapper {
-    position: relative;
-    margin: 20px auto;
-    width: 100%;
-    max-width: 500px;
-}
 
-.greeting-card {
-    background: linear-gradient(
-        145deg,
-        rgba(30, 30, 60, 0.95) 0%,
-        rgba(20, 20, 40, 0.98) 100%
-    );
-    border-radius: 20px;
-    padding: 25px 20px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.3),
-        0 4px 16px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    width: 100%;
-}
-
-.card-shine {
-    display: none; /* Hidden on mobile for performance */
-}
-
-.card-border-animation {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 20px;
-    padding: 2px;
-    background: linear-gradient(45deg, 
-        var(--primary-gold), 
-        var(--secondary-red),
-        var(--accent-teal));
-    -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-    mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-}
-
-.greeting-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
-    position: relative;
-    z-index: 2;
-    flex-wrap: wrap;
-}
-
-.greeting-icon-left,
-.greeting-icon-right {
-    font-size: 1.8rem;
-    color: var(--primary-gold);
-    animation: iconPulseMobile 4s ease-in-out infinite;
-}
-
-@keyframes iconPulseMobile {
-    0%, 100% { 
-        transform: scale(1);
-        opacity: 0.8;
+/* For very small screens (under 400px) */
+@media (max-width: 400px) {
+    .main-title {
+        font-size: 1.8rem; /* Smaller font */
+        flex-wrap: wrap; /* Allow wrapping but control it */
+        height: auto;
+        min-height: 50px;
     }
-    50% { 
-        transform: scale(1.1);
-        opacity: 1;
+    
+    /* Make "Merry Christmas" stay compact */
+    .main-title .title-char:nth-child(-n+16) {
+        display: inline-block;
+        white-space: nowrap;
+    }
+    
+    /* Reduce spacing between words */
+    .main-title .title-char:nth-child(7),
+    .main-title .title-char:nth-child(17),
+    .main-title .title-char:nth-child(19),
+    .main-title .title-char:nth-child(26),
+    .main-title .title-char:nth-child(30) {
+        margin: 0 2px;
+    }
+    
+    .header {
+        min-height: 140px;
+        padding: 15px 10px;
     }
 }
 
-.greeting-title {
-    font-size: 1.5rem;
-    background: linear-gradient(45deg, 
-        var(--primary-gold), 
-        var(--secondary-red));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-family: 'Great Vibes', cursive;
-    text-align: center;
-    animation: titleWaveMobile 5s ease-in-out infinite;
+/* For medium-small screens (400px - 600px) */
+@media (min-width: 401px) and (max-width: 600px) {
+    .main-title {
+        font-size: 2rem;
+        flex-wrap: nowrap; /* Keep on one line */
+        overflow-x: auto; /* Allow horizontal scroll if needed */
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 5px;
+    }
+    
+    .header {
+        min-height: 150px;
+    }
 }
 
-@keyframes titleWaveMobile {
-    0%, 100% { 
-        letter-spacing: normal;
+/* For larger screens */
+@media (min-width: 601px) {
+    .main-title {
+        font-size: 2.5rem;
+        flex-wrap: nowrap;
     }
-    50% { 
-        letter-spacing: 1px;
+    
+    .header {
+        min-height: 180px;
+        padding: 25px 20px;
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+    .main-title {
+        font-size: 3rem;
+    }
+    
+    .header {
+        min-height: 200px;
+        padding: 30px;
     }
 }
 
 /* ============================================
-   NAME DISPLAY - MOBILE OPTIMIZED
+   FIX FOR INVISIBLE TEXT ISSUE
    ============================================ */
-.name-display-container {
-    position: relative;
-    margin: 25px 0;
-    text-align: center;
+/* Force all text to be visible */
+.main-title,
+.greeting-title,
+.name-text,
+.message,
+.typing-text,
+.input-label,
+.magic-btn,
+.action-btn,
+.creator-name,
+.credit-year,
+.countdown-title,
+.auto-slide-indicator,
+.message-indicator,
+.input-hint {
+    color: white !important;
+    -webkit-text-fill-color: white !important;
 }
 
-.name-glow-effect {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 200px;
-    height: 80px;
-    background: radial-gradient(ellipse, 
-        rgba(255, 215, 0, 0.2) 0%,
-        transparent 70%);
-    animation: nameGlowPulseMobile 4s ease-in-out infinite;
-    filter: blur(15px);
-}
-
-@keyframes nameGlowPulseMobile {
-    0%, 100% { 
-        opacity: 0.3;
-        width: 180px;
-    }
-    50% { 
-        opacity: 0.5;
-        width: 220px;
-    }
-}
-
-.name-display {
-    position: relative;
-    display: inline-block;
-    padding: 0 20px;
-    width: 100%;
-}
-
-.name-text {
-    font-size: 2.2rem;
-    font-weight: bold;
+/* But keep gradients for specific elements */
+.main-title,
+.greeting-title,
+.name-text,
+.countdown-title span {
     background: linear-gradient(
         45deg,
         var(--primary-gold) 0%,
-        var(--secondary-red) 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-family: 'Dancing Script', cursive;
-    display: block;
-    position: relative;
-    z-index: 2;
-    word-break: break-word;
-    line-height: 1.2;
-}
-
-.name-trail {
-    position: absolute;
-    bottom: -6px;
-    left: 10%;
-    width: 80%;
-    height: 3px;
-    background: linear-gradient(90deg, 
-        transparent, 
-        var(--primary-gold), 
-        transparent);
-    border-radius: 2px;
-    animation: trailExpandMobile 3s ease-in-out infinite;
-}
-
-@keyframes trailExpandMobile {
-    0%, 100% { 
-        transform: scaleX(0.6);
-        opacity: 0.3;
-    }
-    50% { 
-        transform: scaleX(0.9);
-        opacity: 0.6;
-    }
+        #ff8c00 30%,
+        var(--secondary-red) 60%,
+        #ff1493 90%
+    ) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
 }
 
 /* ============================================
-   MESSAGE SLIDER - MOBILE FRIENDLY
+   COMPACT LAYOUT FOR MOBILE
    ============================================ */
-.message-container {
-    position: relative;
-    min-height: 150px;
-    margin: 25px 0;
-    overflow: hidden;
-    width: 100%;
-}
-
-.message-slider {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.message {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 20px;
-    font-size: 1.2rem;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.95);
-    text-align: center;
-    opacity: 0;
-    transform: translateY(20px);
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 14px;
-    border-left: 3px solid var(--primary-gold);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    font-weight: 300;
-}
-
-.message.active {
-    opacity: 1;
-    transform: translateY(0);
-    animation: messageSlideInMobile 0.8s ease-out forwards;
-}
-
-@keyframes messageSlideInMobile {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.message-indicator {
-    text-align: center;
-    margin-top: 15px;
-    font-size: 1rem;
-    color: var(--primary-gold);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-
-.current-message {
-    font-weight: bold;
-    font-size: 1.1rem;
-    min-width: 18px;
-    text-align: center;
-}
-
-.total-messages {
-    opacity: 0.7;
-}
-
-/* ============================================
-   GREETING FOOTER - COMPACT
-   ============================================ */
-.greeting-footer {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.auto-slide-indicator {
-    color: var(--accent-teal);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-size: 0.9rem;
-    flex-wrap: wrap;
-}
-
-.spin {
-    animation: spinMobile 3s linear infinite;
-}
-
-@keyframes spinMobile {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-#countdown {
-    font-weight: bold;
-    color: var(--primary-gold);
-    font-size: 1.1rem;
-    min-width: 20px;
-    text-align: center;
-    display: inline-block;
-}
-
-.next-btn {
-    background: linear-gradient(45deg, 
-        var(--accent-teal), 
-        var(--accent-blue));
-    border: none;
-    padding: 14px 24px;
-    border-radius: 12px;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    width: 100%;
-}
-
-.next-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(69, 183, 209, 0.3);
-}
-
-/* ============================================
-   COUNTDOWN - MOBILE OPTIMIZED
-   ============================================ */
-.countdown-section {
-    background: linear-gradient(
-        145deg,
-        rgba(0, 0, 0, 0.25) 0%,
-        rgba(20, 20, 40, 0.3) 100%
-    );
-    border-radius: 18px;
-    padding: 25px 20px;
-    margin: 25px 0;
-    position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    width: 100%;
-}
-
-.countdown-title {
-    text-align: center;
-    font-size: 1.2rem;
-    color: var(--primary-gold);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    line-height: 1.3;
-}
-
-.countdown-title span {
-    background: linear-gradient(45deg, 
-        var(--primary-gold), 
-        var(--secondary-red));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-weight: 600;
-    padding: 0 8px;
-    text-align: center;
-}
-
-.countdown-display {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    justify-items: center;
-}
-
-.time-block {
-    background: rgba(255, 255, 255, 0.07);
-    padding: 15px 10px;
-    border-radius: 12px;
-    min-width: 0;
-    width: 100%;
-    text-align: center;
-    position: relative;
-}
-
-.time-value {
-    font-size: 1.8rem;
-    font-weight: bold;
-    font-family: 'Courier New', monospace;
-    background: linear-gradient(45deg, 
-        var(--primary-gold), 
-        var(--secondary-red));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    position: relative;
-    z-index: 2;
-}
-
-.time-value.flip {
-    animation: flipCardMobile 0.5s ease-out forwards;
-}
-
-@keyframes flipCardMobile {
-    0% { 
-        transform: rotateX(0deg);
-        opacity: 1;
-    }
-    50% { 
-        transform: rotateX(90deg);
-        opacity: 0;
-    }
-    51% { 
-        transform: rotateX(-90deg);
-        opacity: 0;
-    }
-    100% { 
-        transform: rotateX(0deg);
-        opacity: 1;
-    }
-}
-
-.time-label {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
-    margin-top: 5px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 500;
-}
-
-.time-separator {
-    display: none; /* Hidden on mobile */
-}
-
-.countdown-progress {
-    margin-top: 20px;
-    height: 3px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(90deg, 
-        var(--secondary-red), 
-        var(--primary-gold), 
-        var(--accent-teal));
-    animation: progressShrink 10s linear infinite;
-    transform-origin: left;
-}
-
-@keyframes progressShrink {
-    0% { transform: scaleX(1); }
-    100% { transform: scaleX(0); }
-}
-
-/* ============================================
-   CONTROLS - MOBILE FRIENDLY
-   ============================================ */
-.interactive-controls {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin: 25px 0;
-    width: 100%;
-}
-
-.action-btn {
-    padding: 14px 16px;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 14px;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    text-align: center;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.action-btn:hover {
-    border-color: var(--primary-gold);
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.1);
-}
-
-/* ============================================
-   CREATOR CREDIT - MOBILE
-   ============================================ */
-.creator-credit {
-    text-align: center;
-    margin-top: 30px;
-    padding: 20px 15px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 18px;
-    position: relative;
-    border: 1px solid rgba(255, 215, 0, 0.1);
-    width: 100%;
-}
-
-.credit-glow {
-    display: none; /* Hidden on mobile */
-}
-
-.credit-content {
-    position: relative;
-    z-index: 2;
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    line-height: 1.5;
-}
-
-.pulse {
-    animation: heartbeatMobile 2s ease-in-out infinite;
-    color: var(--secondary-red);
-    margin: 0 4px;
-}
-
-@keyframes heartbeatMobile {
-    0%, 100% { 
-        transform: scale(1);
-    }
-    50% { 
-        transform: scale(1.1);
-    }
-}
-
-.creator-name {
-    font-weight: bold;
-    color: var(--primary-gold);
-    font-size: 1.2rem;
-    padding: 0 8px;
-    position: relative;
-    display: inline-block;
-}
-
-.creator-name::after {
-    content: '';
-    position: absolute;
-    bottom: -3px;
-    left: 8px;
-    right: 8px;
-    height: 2px;
-    background: linear-gradient(90deg, 
-        transparent, 
-        var(--primary-gold), 
-        transparent);
-    animation: nameUnderlineMobile 4s ease-in-out infinite;
-}
-
-@keyframes nameUnderlineMobile {
-    0%, 100% { 
-        transform: scaleX(0.6);
-        opacity: 0.3;
-    }
-    50% { 
-        transform: scaleX(0.8);
-        opacity: 0.6;
-    }
-}
-
-.credit-year {
-    margin-top: 12px;
-    color: var(--accent-teal);
-    font-size: 1rem;
-    position: relative;
-    z-index: 2;
-    letter-spacing: 1px;
-    font-weight: 500;
-}
-
-/* ============================================
-   TABLET STYLES (768px and above)
-   ============================================ */
-@media (min-width: 768px) {
+/* Reduce spacing on mobile */
+@media (max-width: 600px) {
     .container {
-        padding: 25px;
-        max-width: 800px;
-        margin: 0 auto;
+        padding: 10px;
     }
     
     .header {
-        padding: 30px 25px;
-        border-radius: 24px;
-        margin-bottom: 35px;
-    }
-    
-    .main-title {
-        font-size: 2.8rem;
-        gap: 4px;
-    }
-    
-    .title-char {
-        animation: titleCharFloat 3s ease-in-out infinite;
-    }
-    
-    @keyframes titleCharFloat {
-        0%, 100% { 
-            transform: translateY(0); 
-        }
-        50% { 
-            transform: translateY(-10px); 
-        }
-    }
-    
-    .subtitle {
-        font-size: 1.2rem;
-        gap: 15px;
-    }
-    
-    .typing-text {
-        font-size: 1.3rem;
+        margin-bottom: 15px;
+        padding: 15px 10px;
     }
     
     .input-section {
-        max-width: 600px;
-        margin: 30px auto 40px;
+        margin: 15px auto 20px;
     }
     
     .input-glow-container {
-        padding: 35px 30px;
-        border-radius: 24px;
-    }
-    
-    .magic-circle {
-        width: 200px;
-        height: 200px;
-    }
-    
-    #userName {
-        padding: 18px 24px;
-        font-size: 1.2rem;
-    }
-    
-    .magic-btn {
-        padding: 18px 30px;
-        font-size: 1.3rem;
-    }
-    
-    .holiday-orbit {
-        display: block;
-        width: 220px;
-        height: 220px;
-        margin: 30px auto 40px;
-    }
-    
-    .greeting-card {
-        padding: 35px 30px;
-        border-radius: 24px;
-    }
-    
-    .greeting-icon-left,
-    .greeting-icon-right {
-        font-size: 2.2rem;
-    }
-    
-    .greeting-title {
-        font-size: 1.8rem;
-    }
-    
-    .name-text {
-        font-size: 2.8rem;
-    }
-    
-    .message {
-        font-size: 1.4rem;
-        padding: 25px;
-    }
-    
-    .greeting-footer {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .next-btn {
-        width: auto;
-    }
-    
-    .countdown-display {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 15px;
-    }
-    
-    .time-block {
         padding: 20px 15px;
     }
     
-    .time-value {
-        font-size: 2.2rem;
-    }
-    
-    .time-label {
-        font-size: 0.9rem;
-    }
-    
-    .interactive-controls {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 15px;
-    }
-    
-    .action-btn {
-        flex-direction: row;
-        padding: 16px 20px;
-        font-size: 1rem;
-    }
-    
-    .creator-credit {
-        padding: 25px;
-        border-radius: 24px;
-    }
-    
-    .credit-content {
-        font-size: 1.1rem;
-        gap: 15px;
-    }
-    
-    .creator-name {
-        font-size: 1.4rem;
-    }
-    
-    .floating-ornaments {
-        display: block;
-    }
-    
-    .card-shine {
-        display: block;
-    }
-    
-    .time-separator {
-        display: block;
-        font-size: 2rem;
-        align-self: center;
-        color: var(--secondary-red);
-        animation: separatorPulse 2s infinite;
-    }
-    
-    @keyframes separatorPulse {
-        0%, 100% { opacity: 0.5; }
-        50% { opacity: 1; }
-    }
-}
-
-/* ============================================
-   DESKTOP STYLES (1024px and above)
-   ============================================ */
-@media (min-width: 1024px) {
-    .container {
-        padding: 40px;
-        max-width: 1000px;
-    }
-    
-    .header {
-        padding: 40px;
-        margin-bottom: 50px;
-    }
-    
-    .main-title {
-        font-size: 3.5rem;
-        gap: 6px;
-    }
-    
-    .input-section {
-        max-width: 700px;
-        margin: 40px auto 50px;
-    }
-    
-    .input-glow-container {
-        padding: 45px 40px;
-    }
-    
-    .holiday-orbit {
-        width: 280px;
-        height: 280px;
+    .greeting-section {
+        margin-top: 10px;
     }
     
     .greeting-card {
-        padding: 45px 40px;
+        padding: 20px 15px;
+        margin: 10px 0;
     }
     
-    .name-text {
-        font-size: 3.5rem;
-    }
-    
-    .message {
-        font-size: 1.6rem;
-        padding: 30px;
-    }
-    
-    .countdown-display {
-        gap: 25px;
-    }
-    
-    .time-block {
-        min-width: 100px;
-        padding: 25px 20px;
-    }
-    
-    .time-value {
-        font-size: 2.8rem;
+    .countdown-section {
+        margin: 15px 0;
+        padding: 20px 15px;
     }
     
     .interactive-controls {
-        gap: 20px;
-    }
-    
-    .action-btn {
-        padding: 18px 24px;
-        font-size: 1.1rem;
+        margin: 15px 0;
     }
     
     .creator-credit {
-        padding: 30px;
+        margin-top: 20px;
+        padding: 15px 10px;
     }
 }
 
 /* ============================================
-   UTILITY CLASSES
+   FIX SNOW TOGGLE VISIBILITY
    ============================================ */
-.hidden {
-    display: none !important;
+/* Ensure all button text is visible */
+.action-btn,
+.action-btn i,
+.action-btn span {
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.visible {
-    display: block !important;
+/* Snow button specific */
+.action-btn[onclick="toggleSnow()"] {
+    background: linear-gradient(145deg, 
+        rgba(78, 205, 196, 0.8) 0%,
+        rgba(69, 183, 209, 0.9) 100%);
 }
 
-.flex-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.text-center {
-    text-align: center;
+.action-btn[onclick="toggleSnow()"]:hover {
+    background: linear-gradient(145deg, 
+        rgba(78, 205, 196, 1) 0%,
+        rgba(69, 183, 209, 1) 100%);
 }
 
 /* ============================================
-   PERFORMANCE OPTIMIZATIONS
+   UTILITY CLASSES FOR TEXT VISIBILITY
    ============================================ */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
+.visible-text {
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.gradient-text {
+    background: linear-gradient(45deg, 
+        var(--primary-gold), 
+        var(--secondary-red),
+        var(--accent-teal)) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
+}
+
+.white-text {
+    color: white !important;
+    -webkit-text-fill-color: white !important;
 }
 
 /* ============================================
-   SAFARI SPECIFIC FIXES
+   PERFECT HEIGHT FOR HEADER ON MOBILE
    ============================================ */
-@supports (-webkit-touch-callout: none) {
-    body {
-        min-height: -webkit-fill-available;
+/* These ensure the header doesn't get too tall */
+.header-compact {
+    height: auto;
+    min-height: 140px;
+    max-height: 160px;
+    overflow: hidden;
+}
+
+.title-compact {
+    line-height: 1;
+    margin: 5px 0;
+}
+
+/* Single line title on mobile */
+@media (max-width: 600px) {
+    .main-title.single-line {
+        white-space: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
     }
     
-    .container {
-        min-height: -webkit-fill-available;
+    .main-title.single-line::-webkit-scrollbar {
+        display: none; /* Chrome/Safari */
+    }
+    
+    /* Make spacing between words minimal */
+    .main-title .title-char.space {
+        width: 4px;
+        min-width: 4px;
+        display: inline-block;
     }
 }
