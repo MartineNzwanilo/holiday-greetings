@@ -1067,3 +1067,63 @@ body {
         display: none;
     }
 }
+/* Add these to the end of styles.css */
+
+.particle {
+    pointer-events: none;
+}
+
+/* Animation for orbit items */
+@keyframes orbitItemFloat {
+    0%, 100% { 
+        transform: translate(-50%, -50%) rotate(var(--angle)) translateX(150px) rotate(calc(-1 * var(--angle))) translateY(0); 
+    }
+    50% { 
+        transform: translate(-50%, -50%) rotate(var(--angle)) translateX(150px) rotate(calc(-1 * var(--angle))) translateY(-20px); 
+    }
+}
+
+/* Input focus state */
+.input-group.focused .input-underline {
+    width: 100%;
+}
+
+/* Message animations */
+@keyframes messageSlideOut {
+    from { opacity: 1; transform: translateX(0) scale(1); }
+    to { opacity: 0; transform: translateX(-100%) scale(0.9); }
+}
+
+@keyframes messageSlideIn {
+    from { opacity: 0; transform: translateX(100%) scale(0.9); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* Countdown flip animation */
+.flip {
+    animation: flipAnimation 0.5s ease-out;
+}
+
+@keyframes flipAnimation {
+    0% { transform: rotateX(0deg); }
+    50% { transform: rotateX(90deg); }
+    100% { transform: rotateX(0deg); }
+}
+
+/* Auto-slide progress bar */
+#progressBar {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #ffd700, #4ecdc4);
+    animation: progressShrink 7s linear infinite;
+    transform-origin: left;
+}
+
+@keyframes progressShrink {
+    0% { transform: scaleX(1); }
+    100% { transform: scaleX(0); }
+}
+
+/* Audio elements */
+audio {
+    display: none;
+}
