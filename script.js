@@ -820,3 +820,31 @@ window.addEventListener('load', () => {
         audio.volume = 0.2;
     });
 });
+// Add this function to handle canvas resizing
+function initCanvas() {
+    const canvas = document.getElementById('snowCanvas');
+    if (!canvas) return;
+    
+    // Set canvas size based on viewport
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Reduce particle count on mobile
+        if (window.innerWidth < 768) {
+            holidayMagic.state.particleCount = 50;
+        } else {
+            holidayMagic.state.particleCount = 150;
+        }
+    }
+    
+    // Initial resize
+    resizeCanvas();
+    
+    // Resize on window change
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', resizeCanvas);
+}
+
+// Call this in your initialize function
+initCanvas();
