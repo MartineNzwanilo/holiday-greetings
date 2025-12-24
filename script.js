@@ -582,20 +582,47 @@ class HolidayMagic {
         setTimeout(type, 1000);
     }
     
-    playSound(soundId) {
-        try {
-            const sound = document.getElementById(soundId);
-            if (sound) {
-                sound.currentTime = 0;
-                sound.volume = 0.2;
-                sound.play().catch(() => {
-                    // Silent fail for audio
-                });
-            }
-        } catch (e) {
-            // Silent fail
+    playSound(soundId, options = {}) {
+    try {
+        const sound = document.getElementById(soundId);
+        if (!sound) {
+            console.warn(`Sound element with id "${soundId}" not found`);
+            return;
         }
+        
+        // Apply options with defaults
+        const { 
+            volume = 0.2, 
+            resetTime = true,
+            allowOverlap = false 
+        } = options;
+        
+        // Don't play if already playing and overlap not allowed
+        if (!allowOverlap && !sound.paused) {
+            return;
+        }
+        
+        if (resetTime) {
+            sound.currentTime = 0;
+        }
+        
+        sound.volume = Math.max(0, Math.min(1, volume)); // Clamp between 0-1
+        
+        const playPromise = sound.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                // Handle autoplay restrictions
+                if (error.name === 'NotAllowedError') {
+                    console.warn('Audio play was blocked by browser policy');
+                }
+                // Silent fail for other audio errors
+            });
+        }
+    } catch (e) {
+        // Silent fail
     }
+}
     
     showNotification(message) {
         const existingNotification = document.querySelector('.custom-notification');
